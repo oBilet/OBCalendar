@@ -5,11 +5,11 @@ import PackageDescription
 
 let package = Package(
     name: "OBCalendar",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v14)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "OBCalendar",
+            name: "ObiletCalendar",
             targets: ["OBCalendar"]),
     ],
     targets: [
