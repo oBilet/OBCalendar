@@ -1,5 +1,5 @@
 import XCTest
-@testable import OBCalendar
+@testable import ObiletCalendar
 
 final class OBCalendarTests: XCTestCase {
     func testExample() throws {

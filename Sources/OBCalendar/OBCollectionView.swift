@@ -45,26 +45,59 @@ public struct OBCollectionView<Content: View, DataType>: View {
     }
     
     public var body: some View {
-        
         if scrollEnabled {
-            
+            ScrollViewReader { scrollProxy in
+                ScrollView(axis) {
+                    makeContentView(scrollProxy: scrollProxy)
+                }
+            }
         } else {
-            
+            makeContentView(scrollProxy: nil)
         }
     }
     
+    private func makeContentView(scrollProxy: ScrollViewProxy?) -> some View {
+        let contentView = makeDataContentView(scrollProxy: scrollProxy)
+        return ZStack {
+            if axis == .vertical {
+                if isLazy {
+                    LazyVGrid(columns: gridItems, spacing: gridSpacing) {
+                        contentView
+                    }
+                } else {
+                    VStack {
+                        contentView
+                    }
+                }
+            } else {
+                if isLazy {
+                    LazyHGrid(rows: gridItems, spacing: gridSpacing) {
+                        contentView
+                    }
+                } else {
+                    HStack {
+                        contentView
+                    }
+                }
+            }
+        }
+    }
+
     private func makeDataContentView(scrollProxy: ScrollViewProxy?) -> some View {
         ForEach(data.indices, id: \.self) { index in
-            
             content(data[index], index, scrollProxy)
         }
     }
 }
 
 #Preview {
-    OBCollectionView(data: []) {
-        item,
-        index,
-        scrollProxy in
+    OBCollectionView(
+        data: ["1", "2", "3"],
+        isLazy: false,
+        axis: .vertical,
+        gridSpacing: 10,
+        scrollEnabled: true
+    ) { item, index, scrollProxy in
+        Text(item)
     }
 }
