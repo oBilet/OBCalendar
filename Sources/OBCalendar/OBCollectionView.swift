@@ -16,7 +16,8 @@ public struct OBCollectionView<Content: View, DataType>: View {
     let gridSpacing: CGFloat
     let scrollEnabled: Bool
     
-    @ViewBuilder let content: (
+    @ViewBuilder
+    let content: (
         _ item: DataType,
         _ index: Int,
         _ scrollProxy: ScrollViewProxy?

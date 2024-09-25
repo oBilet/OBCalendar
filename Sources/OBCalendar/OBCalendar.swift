@@ -11,13 +11,15 @@ public struct OBCalendar<
     
     let years: [CalendarModel.Year]
     
-    @ViewBuilder let yearContent: (
+    @ViewBuilder 
+    let yearContent: (
         _ year: CalendarModel.Year,
         _ scrollProxy: ScrollViewProxy?,
         _ monthsView: OBCollectionView<Month, CalendarModel.Month>
     ) -> Year
         
-    @ViewBuilder let monthContent: (
+    @ViewBuilder
+    let monthContent: (
         _ model: (
             year: CalendarModel.Year,
             month: CalendarModel.Month
@@ -29,7 +31,8 @@ public struct OBCalendar<
         _ daysView: OBCollectionView<Day, CalendarModel.Day>
     ) -> Month
     
-    @ViewBuilder let dayContent: (
+    @ViewBuilder 
+    let dayContent: (
         _ model: (
             year: CalendarModel.Year,
             month: CalendarModel.Month,
@@ -111,8 +114,17 @@ public struct OBCalendar<
                     gridSpacing: .zero,
                     scrollEnabled: false
                 ) { day,  dayIndex, dayScrollProxy in
-                    
+                    self.dayContent(
+                        (year, month, day),
+                        (yearScrollProxy, monthScrollProxy, dayScrollProxy)
+                    )
                 }
+                
+                self.monthContent(
+                    (year, month),
+                    (yearScrollProxy, monthScrollProxy),
+                    daysView
+                )
             }
         }
     }
