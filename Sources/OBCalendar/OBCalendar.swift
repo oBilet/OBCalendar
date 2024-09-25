@@ -98,6 +98,22 @@ public struct OBCalendar<
             gridSpacing: .zero
         ) { year, yearIndex, yearScrollProxy in
             
+            let monthsView = OBCollectionView(
+                data: year.months,
+                isLazy: false,
+                gridSpacing: .zero,
+                scrollEnabled: false
+            ) { month, monthIndex, monthScrollProxy in
+                
+                let daysView = OBCollectionView(
+                    data: month.days,
+                    gridItems: dayGridItem,
+                    gridSpacing: .zero,
+                    scrollEnabled: false
+                ) { day,  dayIndex, dayScrollProxy in
+                    
+                }
+            }
         }
     }
 }
