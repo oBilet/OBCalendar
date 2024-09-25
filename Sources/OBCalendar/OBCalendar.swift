@@ -82,8 +82,32 @@ public struct OBCalendar<
         self.dayContent = dayContent
     }
 
+    let dayGridItem: [GridItem] = [
+        .init(spacing: .zero),
+        .init(spacing: .zero),
+        .init(spacing: .zero),
+        .init(spacing: .zero),
+        .init(spacing: .zero),
+        .init(spacing: .zero),
+        .init(spacing: .zero)
+    ]
     
     public var body: some View {
-        Text("")
+        OBCollectionView(
+            data: years,
+            gridSpacing: .zero
+        ) { year, yearIndex, yearScrollProxy in
+            
+        }
+    }
+}
+
+#Preview {
+    OBCalendar(years: []) { model, scrollProxy in
+        
+    } monthContent: { model, scrollProxy, dayView in
+        
+    } yearContent: { model, scrollProxy, monthView in
+        
     }
 }
