@@ -127,6 +127,7 @@ public struct OBCalendar<
                     daysView
                 )
             }
+            
             self.yearContent(
                 year,
                 yearScrollProxy,
@@ -137,11 +138,21 @@ public struct OBCalendar<
 }
 
 #Preview {
-    OBCalendar(years: []) { model, scrollProxy in
-        
+    OBCalendar(
+        years: [.init(
+            year: 2024,
+            months: [
+                .init(
+                    month: 1,
+                    days: Array(1...30).map { .init(day: $0, date: Date()) }
+                )
+            ]
+        )]
+    ) { model, scrollProxy in
+        Text("\(model.day.day)")
     } monthContent: { model, scrollProxy, dayView in
-        
+        dayView
     } yearContent: { model, scrollProxy, monthView in
-        
+        monthView
     }
 }

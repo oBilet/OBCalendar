@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+private struct HeightPreferenceKey: PreferenceKey {
+    static var defaultValue = CGFloat.zero
+    
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
 public struct OBCollectionView<Content: View, DataType>: View {
     
     let data: [DataType]
@@ -15,6 +23,8 @@ public struct OBCollectionView<Content: View, DataType>: View {
     let gridItems: [GridItem]
     let gridSpacing: CGFloat
     let scrollEnabled: Bool
+    
+    @State private var nonLazyOrthogonalSizes: [CGFloat]
     
     @ViewBuilder
     let content: (
@@ -43,6 +53,10 @@ public struct OBCollectionView<Content: View, DataType>: View {
         self.gridSpacing = gridSpacing
         self.scrollEnabled = scrollEnabled
         self.content = content
+        
+        let orthogonalGroupCount = Self.getOrthogonalGroupCount(dataCount: data.count, gridItemCount: gridItems.count)
+        self.nonLazyOrthogonalSizes = Array(0..<orthogonalGroupCount)
+            .map { _ in 0 }
     }
     
     public var body: some View {
@@ -58,28 +72,21 @@ public struct OBCollectionView<Content: View, DataType>: View {
     }
     
     private func makeContentView(scrollProxy: ScrollViewProxy?) -> some View {
-        let contentView = makeDataContentView(scrollProxy: scrollProxy)
-        return ZStack {
-            if axis == .vertical {
-                if isLazy {
+        
+        return contentBuilder {
+            if isLazy {
+                let contentView = makeDataContentView(scrollProxy: scrollProxy)
+                if axis == .vertical {
                     LazyVGrid(columns: gridItems, spacing: gridSpacing) {
                         contentView
                     }
-                } else {
-                    VStack {
+                } else if axis == .horizontal {
+                    LazyHGrid(rows: gridItems, spacing: gridSpacing) {
                         contentView
                     }
                 }
             } else {
-                if isLazy {
-                    LazyHGrid(rows: gridItems, spacing: gridSpacing) {
-                        contentView
-                    }
-                } else {
-                    HStack {
-                        contentView
-                    }
-                }
+                makeNonLazyGrid(scrollProxy: scrollProxy)
             }
         }
     }
@@ -89,16 +96,162 @@ public struct OBCollectionView<Content: View, DataType>: View {
             content(data[index], index, scrollProxy)
         }
     }
+    
+    private func getItemIndexFrom(groupIndex: Int, contentIndex: Int) -> Int {
+        data.count * groupIndex + contentIndex
+    }
+    
+    private static func getOrthogonalGroupCount(dataCount: Int, gridItemCount: Int) -> Int {
+        let orthogonalLowerBound = dataCount / gridItemCount
+        return dataCount % gridItemCount > 0
+        ? orthogonalLowerBound + 1
+        : orthogonalLowerBound
+    }
+    
+    private func makeNonLazyGrid(scrollProxy: ScrollViewProxy?) -> some View {
+        
+        let gridItemCount = gridItems.count
+        
+        var contents = Array(0..<gridItemCount).map { _ in [Content]() }
+        
+        for index in data.indices {
+            let targetIndex = index % gridItemCount
+            contents[targetIndex].append(
+                content(data[index], index, scrollProxy)
+            )
+        }
+        
+        return contentBuilder {
+            if axis == .vertical {
+                HStack(alignment: .top) {
+                    ForEach(gridItems.indices, id: \.self) { columnIndex in
+                        VStack(spacing: gridSpacing) {
+                            ForEach(contents[columnIndex].indices, id: \.self) { contentIndex in
+                                modifyCell(
+                                    view: contents[columnIndex][contentIndex],
+                                    contentIndex: contentIndex
+                                )
+                                .frame(height:  nonLazyOrthogonalSizes[contentIndex])
+                            }
+                        }
+                    }
+                }
+            } else if axis == .horizontal {
+                VStack(alignment: .leading) {
+                    ForEach(gridItems.indices, id: \.self) { columnIndex in
+                        HStack(spacing: gridSpacing) {
+                            ForEach(contents[columnIndex].indices, id: \.self) { contentIndex in
+                                modifyCell(
+                                    view: contents[columnIndex][contentIndex],
+                                    contentIndex: contentIndex
+                                )
+                                .frame(width:  nonLazyOrthogonalSizes[contentIndex])
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func modifyCell<CellView: View>(view: CellView, contentIndex: Int) -> some View {
+        view
+            .background(
+                GeometryReader { geoProxy in
+                    Color.clear
+                        .preference(
+                            key: HeightPreferenceKey.self,
+                            //TODO: Find a way to not run conditional operator here for optimization purposes
+                            value: axis == .vertical
+                            ? geoProxy.size.height
+                            : axis == .horizontal
+                            ? geoProxy.size.width
+                            : .zero
+                        )
+                }
+            )
+            .onPreferenceChange(HeightPreferenceKey.self) { value in
+                nonLazyOrthogonalSizes[contentIndex] = value
+            }
+    }
+    
+    private func contentBuilder<BuiltContent: View>(@ViewBuilder content: () -> BuiltContent) -> BuiltContent {
+        content()
+    }
 }
 
-#Preview {
+//TODO: - FRAME .INFINITY OR FIXED SHOULD BE SET BY CHECKING GRIDITEMS !
+
+//MARK: - Preview
+#Preview("Horizontal 1 - Non Lazy") {
     OBCollectionView(
-        data: ["1", "2", "3"],
+        data: Array(1...10),
+        isLazy: false,
+        axis: .horizontal,
+        gridItems: [.init(), .init(), .init()],
+        gridSpacing: 8
+    ) { item, index, scrollProxy in
+        let text: String = index == 0
+        ? "hello world"
+        : "hello"
+        
+        Text(text)
+            .background(Color.red)
+            .fixedSize()
+    }
+    .background(Color.yellow)
+}
+
+#Preview("Horizontal 1 - Lazy") {
+    OBCollectionView(
+        data: Array(1...10),
+        isLazy: true,
+        axis: .horizontal,
+        gridItems: [.init(), .init(), .init()],
+        gridSpacing: 8
+    ) { item, index, scrollProxy in
+        let text: String = index == 0
+        ? "hello world"
+        : "hello"
+        
+        Text(text)
+            .background(Color.red)
+    }
+    .background(Color.yellow)
+}
+
+#Preview("Vertical 1 - Non Lazy") {
+    OBCollectionView(
+        data: Array(1...10),
         isLazy: false,
         axis: .vertical,
-        gridSpacing: 10,
-        scrollEnabled: true
+        gridItems: [.init(), .init(), .init()],
+        gridSpacing: 8
     ) { item, index, scrollProxy in
-        Text(item)
+        let text: String = index == 0
+        ? "hello world"
+        : "hello"
+        
+        Text(text)
+            .background(Color.red)
     }
+    .background(Color.yellow)
+}
+
+#Preview("Vertical 1 - Lazy") {
+    OBCollectionView(
+        data: Array(1...10),
+        isLazy: true,
+        axis: .vertical,
+        gridItems: [.init(), .init(), .init()],
+        gridSpacing: 8
+    ) { item, index, scrollProxy in
+        let text: String = index == 0
+        ? "hello world"
+        : "hello"
+        
+        Text(text)
+            .background(Color.red)
+    }
+    .background(Color.yellow)
 }
