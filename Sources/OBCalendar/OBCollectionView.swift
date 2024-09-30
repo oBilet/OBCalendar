@@ -7,7 +7,11 @@
 
 import SwiftUI
 
-private struct HeightPreferenceKey: PreferenceKey {
+private func contentBuilder<BuiltContent: View>(@ViewBuilder content: () -> BuiltContent) -> BuiltContent {
+    content()
+}
+
+private struct SizePreferenceKey: PreferenceKey {
     static var defaultValue = CGFloat.zero
     
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
@@ -123,12 +127,20 @@ public struct OBCollectionView<Content: View, DataType>: View {
         
         return contentBuilder {
             if axis == .vertical {
-                HStack(alignment: .top) {
+                HStack(alignment: .top, spacing: .zero) {
                     ForEach(gridItems.indices, id: \.self) { columnIndex in
+                        
+                        let gridItem = gridItems[columnIndex]
+                        
                         VStack(spacing: gridSpacing) {
                             ForEach(contents[columnIndex].indices, id: \.self) { contentIndex in
-                                modifyCell(
-                                    view: contents[columnIndex][contentIndex],
+                                let cellView = contents[columnIndex][contentIndex]
+                                let alignedCellView = alignCellForVGridItem(
+                                    view: cellView,
+                                    gridItem: gridItem
+                                )
+                                modifyCellSizePreferenceForVGridItem(
+                                    view: alignedCellView,
                                     contentIndex: contentIndex
                                 )
                                 .frame(height:  nonLazyOrthogonalSizes[contentIndex])
@@ -137,12 +149,20 @@ public struct OBCollectionView<Content: View, DataType>: View {
                     }
                 }
             } else if axis == .horizontal {
-                VStack(alignment: .leading) {
-                    ForEach(gridItems.indices, id: \.self) { columnIndex in
+                VStack(alignment: .leading, spacing: .zero) {
+                    ForEach(gridItems.indices, id: \.self) { rowIndex in
                         HStack(spacing: gridSpacing) {
-                            ForEach(contents[columnIndex].indices, id: \.self) { contentIndex in
-                                modifyCell(
-                                    view: contents[columnIndex][contentIndex],
+                            
+                            let gridItem = gridItems[rowIndex]
+                            
+                            ForEach(contents[rowIndex].indices, id: \.self) { contentIndex in
+                                let cellView = contents[rowIndex][contentIndex]
+                                let alignedCellView = alignCellForHGridItem(
+                                    view: cellView,
+                                    gridItem: gridItem
+                                )
+                                modifyCellSizePreferenceForHGridItem(
+                                    view: alignedCellView,
                                     contentIndex: contentIndex
                                 )
                                 .frame(width:  nonLazyOrthogonalSizes[contentIndex])
@@ -154,33 +174,104 @@ public struct OBCollectionView<Content: View, DataType>: View {
         }
     }
     
-    private func modifyCell<CellView: View>(view: CellView, contentIndex: Int) -> some View {
+    private func alignCellForVGridItem<CellView: View>(
+        view: CellView,
+        gridItem: GridItem
+    ) -> some View {
+        contentBuilder {
+            switch gridItem.size {
+            case .fixed(let size):
+                view
+                    .frame(
+                        width: size,
+                        alignment: gridItem.alignment ?? .center
+                    )
+            case .flexible(let minimum, let maximum):
+                view
+                    .frame(
+                        minWidth: minimum,
+                        maxWidth: maximum,
+                        alignment: gridItem.alignment ?? .center
+                    )
+            case .adaptive:
+                view
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(alignment: gridItem.alignment ?? .center)
+            @unknown default:
+                view
+                    .frame(alignment: gridItem.alignment ?? .center)
+            }
+        }
+    }
+    
+    private func alignCellForHGridItem<CellView: View>(
+        view: CellView,
+        gridItem: GridItem
+    ) -> some View {
+        contentBuilder {
+            switch gridItem.size {
+            case .fixed(let size):
+                view
+                    .frame(
+                        height: size,
+                        alignment: gridItem.alignment ?? .center
+                    )
+            case .flexible(minimum: let minimum, maximum: let maximum):
+                view
+                    .frame(
+                        minHeight: minimum,
+                        maxHeight: maximum,
+                        alignment: gridItem.alignment ?? .center
+                    )
+            case .adaptive:
+                view
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(alignment: gridItem.alignment ?? .center)
+            @unknown default:
+                view
+                    .frame(alignment: gridItem.alignment ?? .center)
+            }
+        }
+    }
+    
+    private func modifyCellSizePreferenceForVGridItem<CellView: View>(
+        view: CellView,
+        contentIndex: Int
+    ) -> some View {
         view
             .background(
                 GeometryReader { geoProxy in
                     Color.clear
                         .preference(
-                            key: HeightPreferenceKey.self,
-                            //TODO: Find a way to not run conditional operator here for optimization purposes
-                            value: axis == .vertical
-                            ? geoProxy.size.height
-                            : axis == .horizontal
-                            ? geoProxy.size.width
-                            : .zero
+                            key: SizePreferenceKey.self,
+                            value: geoProxy.size.height
                         )
                 }
             )
-            .onPreferenceChange(HeightPreferenceKey.self) { value in
+            .onPreferenceChange(SizePreferenceKey.self) { value in
                 nonLazyOrthogonalSizes[contentIndex] = value
             }
     }
     
-    private func contentBuilder<BuiltContent: View>(@ViewBuilder content: () -> BuiltContent) -> BuiltContent {
-        content()
+    private func modifyCellSizePreferenceForHGridItem<CellView: View>(
+        view: CellView,
+        contentIndex: Int
+    ) -> some View {
+        view
+            .background(
+                GeometryReader { geoProxy in
+                    Color.clear
+                        .preference(
+                            key: SizePreferenceKey.self,
+                            value: geoProxy.size.width
+                        )
+                }
+            )
+            .onPreferenceChange(SizePreferenceKey.self) { value in
+                nonLazyOrthogonalSizes[contentIndex] = value
+            }
     }
 }
-
-//TODO: - FRAME .INFINITY OR FIXED SHOULD BE SET BY CHECKING GRIDITEMS !
 
 //MARK: - Preview
 #Preview("Horizontal 1 - Non Lazy") {
