@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-private func contentBuilder<BuiltContent: View>(@ViewBuilder content: () -> BuiltContent) -> BuiltContent {
-    content()
-}
-
 private struct SizePreferenceKey: PreferenceKey {
     static var defaultValue = CGFloat.zero
     
@@ -76,8 +72,7 @@ public struct OBCollectionView<Content: View, DataType>: View {
     }
     
     private func makeContentView(scrollProxy: ScrollViewProxy?) -> some View {
-        
-        return contentBuilder {
+        ContentBuilder.buildContent {
             if isLazy {
                 let contentView = makeDataContentView(scrollProxy: scrollProxy)
                 if axis == .vertical {
@@ -125,7 +120,7 @@ public struct OBCollectionView<Content: View, DataType>: View {
             )
         }
         
-        return contentBuilder {
+        return ContentBuilder.buildContent {
             if axis == .vertical {
                 HStack(alignment: .top, spacing: .zero) {
                     ForEach(gridItems.indices, id: \.self) { columnIndex in
@@ -135,7 +130,7 @@ public struct OBCollectionView<Content: View, DataType>: View {
                         VStack(spacing: gridSpacing) {
                             ForEach(contents[columnIndex].indices, id: \.self) { contentIndex in
                                 let cellView = contents[columnIndex][contentIndex]
-                                let alignedCellView = alignCellForVGridItem(
+                                let alignedCellView = ContentBuilder.alignCellForVGridItem(
                                     view: cellView,
                                     gridItem: gridItem
                                 )
@@ -157,7 +152,7 @@ public struct OBCollectionView<Content: View, DataType>: View {
                             
                             ForEach(contents[rowIndex].indices, id: \.self) { contentIndex in
                                 let cellView = contents[rowIndex][contentIndex]
-                                let alignedCellView = alignCellForHGridItem(
+                                let alignedCellView = ContentBuilder.alignCellForHGridItem(
                                     view: cellView,
                                     gridItem: gridItem
                                 )
@@ -170,66 +165,6 @@ public struct OBCollectionView<Content: View, DataType>: View {
                         }
                     }
                 }
-            }
-        }
-    }
-    
-    private func alignCellForVGridItem<CellView: View>(
-        view: CellView,
-        gridItem: GridItem
-    ) -> some View {
-        contentBuilder {
-            switch gridItem.size {
-            case .fixed(let size):
-                view
-                    .frame(
-                        width: size,
-                        alignment: gridItem.alignment ?? .center
-                    )
-            case .flexible(let minimum, let maximum):
-                view
-                    .frame(
-                        minWidth: minimum,
-                        maxWidth: maximum,
-                        alignment: gridItem.alignment ?? .center
-                    )
-            case .adaptive:
-                view
-                    .fixedSize(horizontal: true, vertical: false)
-                    .frame(alignment: gridItem.alignment ?? .center)
-            @unknown default:
-                view
-                    .frame(alignment: gridItem.alignment ?? .center)
-            }
-        }
-    }
-    
-    private func alignCellForHGridItem<CellView: View>(
-        view: CellView,
-        gridItem: GridItem
-    ) -> some View {
-        contentBuilder {
-            switch gridItem.size {
-            case .fixed(let size):
-                view
-                    .frame(
-                        height: size,
-                        alignment: gridItem.alignment ?? .center
-                    )
-            case .flexible(minimum: let minimum, maximum: let maximum):
-                view
-                    .frame(
-                        minHeight: minimum,
-                        maxHeight: maximum,
-                        alignment: gridItem.alignment ?? .center
-                    )
-            case .adaptive:
-                view
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(alignment: gridItem.alignment ?? .center)
-            @unknown default:
-                view
-                    .frame(alignment: gridItem.alignment ?? .center)
             }
         }
     }

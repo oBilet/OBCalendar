@@ -110,7 +110,7 @@ public struct OBCalendar<
                 
                 let daysView = OBCollectionView(
                     data: month.days,
-                    isLazy: true,
+                    isLazy: false,
                     gridItems: dayGridItem,
                     gridSpacing: .zero,
                     scrollEnabled: false
