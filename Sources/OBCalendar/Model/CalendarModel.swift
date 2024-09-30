@@ -20,7 +20,14 @@ public enum CalendarModel {
     }
     
     struct Day {
+        
+        enum ModelType {
+            case placeHolder
+            case actual
+        }
+        
         let day: Int
         let date: Date
+        let type: ModelType
     }
 }

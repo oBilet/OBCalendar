@@ -10,6 +10,9 @@ public struct OBCalendar<
 >: View {
     
     let years: [CalendarModel.Year]
+    let lazyYears: Bool
+    let lazyMonths: Bool
+    let lazyDays: Bool
     
     @ViewBuilder 
     let yearContent: (
@@ -47,6 +50,9 @@ public struct OBCalendar<
     
     init(
         years: [CalendarModel.Year],
+        lazyYears: Bool = false,
+        lazyMonths: Bool = false,
+        lazyDays: Bool = false,
         
         @ViewBuilder dayContent: @escaping (
             _ model: (
@@ -80,6 +86,9 @@ public struct OBCalendar<
         ) -> Year
     ) {
         self.years = years
+        self.lazyYears = lazyYears
+        self.lazyMonths = lazyMonths
+        self.lazyDays = lazyDays
         self.yearContent = yearContent
         self.monthContent = monthContent
         self.dayContent = dayContent
@@ -98,19 +107,20 @@ public struct OBCalendar<
     public var body: some View {
         OBCollectionView(
             data: years,
+            isLazy: lazyYears,
             gridSpacing: .zero
         ) { year, yearIndex, yearScrollProxy in
             
             let monthsView = OBCollectionView(
                 data: year.months,
-                isLazy: false,
+                isLazy: lazyMonths,
                 gridSpacing: .zero,
                 scrollEnabled: false
             ) { month, monthIndex, monthScrollProxy in
                 
                 let daysView = OBCollectionView(
                     data: month.days,
-                    isLazy: false,
+                    isLazy: lazyDays,
                     gridItems: dayGridItem,
                     gridSpacing: .zero,
                     scrollEnabled: false
@@ -144,7 +154,7 @@ public struct OBCalendar<
             months: [
                 .init(
                     month: 1,
-                    days: Array(1...30).map { .init(day: $0, date: Date()) }
+                    days: Array(1...30).map { .init(day: $0, date: Date(), type: .actual) }
                 )
             ]
         )]
