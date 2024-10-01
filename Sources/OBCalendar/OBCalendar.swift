@@ -107,7 +107,11 @@ public struct OBCalendar<
     
     let placeholderView = Color.red
     
+    var calendar = Calendar.current
+    calendar.locale = .init(identifier: "en-US")
+    
     return OBCalendar(
+        calendar: calendar,
         startingDate: startingDate,
         endingDate: endingDate
     ) { model, scrollProxy in
