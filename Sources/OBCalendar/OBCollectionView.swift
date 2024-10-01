@@ -128,18 +128,39 @@ public struct OBCollectionView<Content: View, DataType>: View {
                         let gridItem = gridItems[columnIndex]
                         
                         VStack(spacing: gridSpacing) {
-                            ForEach(contents[columnIndex].indices, id: \.self) { contentIndex in
-                                let cellView = contents[columnIndex][contentIndex]
-                                let alignedCellView = ContentBuilder.alignCellForVGridItem(
-                                    view: cellView,
+                            
+                            if contents[columnIndex].isEmpty {
+                                let spacerView = Color.clear
+                                let alignedSpacer = ContentBuilder.alignCellForVGridItem(
+                                    view: spacerView,
                                     gridItem: gridItem
                                 )
                                 modifyCellSizePreferenceForVGridItem(
-                                    view: alignedCellView,
-                                    contentIndex: contentIndex
+                                    view: spacerView,
+                                    contentIndex: 0
                                 )
-                                .frame(height:  nonLazyOrthogonalSizes[contentIndex])
+                                .frame(
+                                    height: nonLazyOrthogonalSizes.first ?? .zero
+                                )
+                            } else {
+                                ForEach(contents[columnIndex].indices, id: \.self) { contentIndex in
+                                    let cellView = contents[columnIndex][contentIndex]
+                                    let alignedCellView = ContentBuilder.alignCellForVGridItem(
+                                        view: cellView,
+                                        gridItem: gridItem
+                                    )
+                                    modifyCellSizePreferenceForVGridItem(
+                                        view: alignedCellView,
+                                        contentIndex: contentIndex
+                                    )
+                                    .frame(
+                                        height:  nonLazyOrthogonalSizes[contentIndex],
+                                        alignment: gridItem.alignment ?? .center
+                                    )
+                                }
                             }
+                            
+                            
                         }
                     }
                 }
@@ -150,17 +171,36 @@ public struct OBCollectionView<Content: View, DataType>: View {
                             
                             let gridItem = gridItems[rowIndex]
                             
-                            ForEach(contents[rowIndex].indices, id: \.self) { contentIndex in
-                                let cellView = contents[rowIndex][contentIndex]
-                                let alignedCellView = ContentBuilder.alignCellForHGridItem(
-                                    view: cellView,
+                            if contents[rowIndex].isEmpty {
+                                let spacerView = Color.clear
+                                let alignedSpacer = ContentBuilder.alignCellForHGridItem(
+                                    view: spacerView,
                                     gridItem: gridItem
                                 )
                                 modifyCellSizePreferenceForHGridItem(
-                                    view: alignedCellView,
-                                    contentIndex: contentIndex
+                                    view: spacerView,
+                                    contentIndex: 0
                                 )
-                                .frame(width:  nonLazyOrthogonalSizes[contentIndex])
+                                .frame(
+                                    width: nonLazyOrthogonalSizes.first ?? .zero,
+                                    alignment: gridItem.alignment ?? .center
+                                )
+                            } else {
+                                ForEach(contents[rowIndex].indices, id: \.self) { contentIndex in
+                                    let cellView = contents[rowIndex][contentIndex]
+                                    let alignedCellView = ContentBuilder.alignCellForHGridItem(
+                                        view: cellView,
+                                        gridItem: gridItem
+                                    )
+                                    modifyCellSizePreferenceForHGridItem(
+                                        view: alignedCellView,
+                                        contentIndex: contentIndex
+                                    )
+                                    .frame(
+                                        width: nonLazyOrthogonalSizes[contentIndex],
+                                        alignment: gridItem.alignment ?? .center
+                                    )
+                                }
                             }
                         }
                     }
@@ -280,4 +320,18 @@ public struct OBCollectionView<Content: View, DataType>: View {
             .background(Color.red)
     }
     .background(Color.yellow)
+}
+
+#Preview("Vertical non-lazy less item") {
+    OBCollectionView(
+        data: Array(1...100)
+    ) { data, index, scrollProxy in
+        Text("\(data)")
+            .id(data)
+            .onTapGesture {
+                withAnimation {
+                    scrollProxy?.scrollTo(1)
+                }
+            }
+    }
 }

@@ -9,25 +9,68 @@ import Foundation
 
 public enum CalendarModel {
     
-    struct Year {
-        let year: Int
-        let months: [Month]
+    public struct Year {
+        public let year: Int
+        public var months: [Month]
     }
     
-    struct Month {
-        let month: Int
-        let days: [Day]
+    public struct Month {
+        public let month: Int
+        public var days: [Day]
     }
     
-    struct Day {
+    public struct Day {
         
-        enum ModelType {
-            case placeHolder
-            case actual
+        public enum DateType {
+            case previousMonth
+            case nextMonth
+            case currentMonth
         }
         
-        let day: Int
-        let date: Date
-        let type: ModelType
+        public let day: Int
+        public let date: Date
+        public let dateType: DateType
+    }
+}
+
+extension Array where Element == CalendarModel.Year {
+    mutating func appendDay(number: Int, date: Date, dateType: CalendarModel.Day.DateType) {
+        let lastMonths = self[self.endIndex-1].months
+        self[self.endIndex-1]
+            .months[lastMonths.endIndex-1]
+            .days
+            .append(
+                .init(
+                    day: number,
+                    date: date,
+                    dateType: dateType
+                )
+            )
+    }
+    
+    mutating func appendYear(number: Int) {
+        self.append(
+            .init(
+                year: number,
+                months: []
+            )
+        )
+    }
+    
+    mutating func appendMonth(number: Int) {
+        self[self.endIndex-1]
+            .months
+            .append(
+                .init(
+                    month: number,
+                    days: []
+                )
+            )
+    }
+}
+
+extension Array where Element == CalendarModel.Month {
+    var lastMonth: CalendarModel.Month {
+        self[endIndex-1]
     }
 }

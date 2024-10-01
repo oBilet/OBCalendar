@@ -148,20 +148,32 @@ public struct OBCalendar<
 }
 
 #Preview {
-    OBCalendar(
-        years: [.init(
-            year: 2024,
-            months: [
-                .init(
-                    month: 1,
-                    days: Array(1...30).map { .init(day: $0, date: Date(), type: .actual) }
-                )
-            ]
-        )]
+    let startingDate = Date()
+    let endingDate = Calendar.current.date(byAdding: .year, value: 1, to: startingDate)!
+    
+    let placeholderView = Color.red
+    
+    return OBCalendar(
+        years: CalendarModelBuilder.defaultLayout(
+            startingDate: startingDate,
+            endingDate: endingDate
+        )
     ) { model, scrollProxy in
-        Text("\(model.day.day)")
+        
+        ZStack {
+            if model.day.dateType == .currentMonth {
+                Text("\(model.day.day)")
+            } else {
+                placeholderView
+            }
+        }
+        .frame(width: 35, height: 35)
+        
     } monthContent: { model, scrollProxy, dayView in
-        dayView
+        VStack {
+            Text(Calendar.current.monthSymbols[model.month.month-1])
+            dayView
+        }
     } yearContent: { model, scrollProxy, monthView in
         monthView
     }
