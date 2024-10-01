@@ -34,7 +34,7 @@ public struct OBCalendar<
         _ daysView: OBCollectionView<Day, CalendarModel.Day>
     ) -> Month
     
-    @ViewBuilder 
+    @ViewBuilder
     let dayContent: (
         _ model: (
             year: CalendarModel.Year,
@@ -47,52 +47,6 @@ public struct OBCalendar<
             day: ScrollViewProxy?
         )
     ) -> Day
-    
-    init(
-        years: [CalendarModel.Year],
-        lazyYears: Bool = false,
-        lazyMonths: Bool = false,
-        lazyDays: Bool = false,
-        
-        @ViewBuilder dayContent: @escaping (
-            _ model: (
-                year: CalendarModel.Year,
-                month: CalendarModel.Month,
-                day: CalendarModel.Day
-            ),
-            _ scrollProxy: (
-                year: ScrollViewProxy?,
-                month: ScrollViewProxy?,
-                day: ScrollViewProxy?
-            )
-        ) -> Day,
-        
-        @ViewBuilder monthContent: @escaping (
-            _ model: (
-                year: CalendarModel.Year,
-                month: CalendarModel.Month
-            ),
-            _ scrollProxy: (
-                year: ScrollViewProxy?,
-                month: ScrollViewProxy?
-            ),
-            _ daysView: OBCollectionView<Day, CalendarModel.Day>
-        ) -> Month,
-        
-        @ViewBuilder yearContent: @escaping (
-            _ year: CalendarModel.Year,
-            _ scrollProxy: ScrollViewProxy?,
-            _ monthsView: OBCollectionView<Month, CalendarModel.Month>
-        ) -> Year
-    ) {
-        self.years = years
-        self.lazyYears = lazyYears
-        self.lazyMonths = lazyMonths
-        self.lazyDays = lazyDays
-        self.yearContent = yearContent
-        self.monthContent = monthContent
-        self.dayContent = dayContent
-    }
 
     let dayGridItem: [GridItem] = [
         .init(spacing: .zero),
@@ -154,10 +108,8 @@ public struct OBCalendar<
     let placeholderView = Color.red
     
     return OBCalendar(
-        years: CalendarModelBuilder.defaultLayout(
-            startingDate: startingDate,
-            endingDate: endingDate
-        )
+        startingDate: startingDate,
+        endingDate: endingDate
     ) { model, scrollProxy in
         
         ZStack {
