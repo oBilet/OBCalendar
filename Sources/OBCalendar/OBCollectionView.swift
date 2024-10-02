@@ -136,7 +136,7 @@ public struct OBCollectionView<Content: View, DataType>: View {
                                     gridItem: gridItem
                                 )
                                 modifyCellSizePreferenceForVGridItem(
-                                    view: spacerView,
+                                    view: alignedSpacer,
                                     contentIndex: 0
                                 )
                                 .frame(
@@ -178,7 +178,7 @@ public struct OBCollectionView<Content: View, DataType>: View {
                                     gridItem: gridItem
                                 )
                                 modifyCellSizePreferenceForHGridItem(
-                                    view: spacerView,
+                                    view: alignedSpacer,
                                     contentIndex: 0
                                 )
                                 .frame(
@@ -224,7 +224,8 @@ public struct OBCollectionView<Content: View, DataType>: View {
                 }
             )
             .onPreferenceChange(SizePreferenceKey.self) { value in
-                nonLazyOrthogonalSizes[contentIndex] = value
+                let current = nonLazyOrthogonalSizes[contentIndex]
+                nonLazyOrthogonalSizes[contentIndex] = max(current, value)
             }
     }
     
@@ -243,7 +244,8 @@ public struct OBCollectionView<Content: View, DataType>: View {
                 }
             )
             .onPreferenceChange(SizePreferenceKey.self) { value in
-                nonLazyOrthogonalSizes[contentIndex] = value
+                let current = nonLazyOrthogonalSizes[contentIndex]
+                nonLazyOrthogonalSizes[contentIndex] = max(current, value)
             }
     }
 }
@@ -294,11 +296,12 @@ public struct OBCollectionView<Content: View, DataType>: View {
         gridItems: [.init(), .init(), .init()],
         gridSpacing: 8
     ) { item, index, scrollProxy in
-        let text: String = index == 0
-        ? "hello world"
+        let text: String = index == 1
+        ? "hello world hello world hello world hello world"
         : "hello"
         
         Text(text)
+            .fixedSize(horizontal: false, vertical: true)
             .background(Color.red)
     }
     .background(Color.yellow)
@@ -324,14 +327,11 @@ public struct OBCollectionView<Content: View, DataType>: View {
 
 #Preview("Vertical non-lazy less item") {
     OBCollectionView(
-        data: Array(1...100)
+        data: Array(1...2),
+        gridItems: Array(repeating: .init(), count: 3)
     ) { data, index, scrollProxy in
-        Text("\(data)")
-            .id(data)
-            .onTapGesture {
-                withAnimation {
-                    scrollProxy?.scrollTo(1)
-                }
-            }
+        Text("Lorem ipsum dolor sit amet.")
+            .background(Color.red)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
