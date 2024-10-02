@@ -43,7 +43,7 @@ public enum CalendarModelBuilder {
                 }
             }
             
-            if currentDay == 1 {
+            if currentDay == 1 || currentDate == startingDate {
                 addBeginningPlaceholder(
                     calendar: calendar,
                     totalWeekdayCount: weekdayCount,
