@@ -25,6 +25,7 @@ public enum CalendarModel {
             case previousMonth
             case nextMonth
             case currentMonth
+            case outOfRange
         }
         
         public let day: Int

@@ -48,6 +48,7 @@ public enum CalendarModelBuilder {
                     calendar: calendar,
                     totalWeekdayCount: weekdayCount,
                     targetDate: currentDate,
+                    startingDate: startingDate,
                     result: &result
                 )
             }
@@ -62,11 +63,12 @@ public enum CalendarModelBuilder {
                 
                 let isLastDayOfMonth = nextDay.isFirstDayOfMonth(calendar: calendar)
                 
-                if isLastDayOfMonth {
+                if isLastDayOfMonth || currentDate == endingDate {
                     addEndingPlaceholder(
                         calendar: calendar,
                         totalWeekdayCount: weekdayCount,
                         targetDate: currentDate,
+                        endingDate: endingDate,
                         result: &result
                     )
                 }
@@ -100,6 +102,7 @@ extension CalendarModelBuilder {
         calendar: Calendar,
         totalWeekdayCount: Int,
         targetDate: Date,
+        startingDate: Date,
         result: inout [CalendarModel.Year]
     ) {
         let placeholderCount = getBeginningPlaceholderCount(
@@ -114,7 +117,9 @@ extension CalendarModelBuilder {
                 result.appendDay(
                     number: calendar.component(.day, from: dateToBeAdded),
                     date: dateToBeAdded,
-                    dateType: .previousMonth
+                    dateType: dateToBeAdded < startingDate
+                    ? .outOfRange
+                    : .previousMonth
                 )
             }
         }
@@ -124,6 +129,7 @@ extension CalendarModelBuilder {
         calendar: Calendar,
         totalWeekdayCount: Int,
         targetDate: Date,
+        endingDate: Date,
         result: inout [CalendarModel.Year]
     ) {
         let placeholderCount = getEndingPlaceholderCount(
@@ -140,10 +146,13 @@ extension CalendarModelBuilder {
                 } else {
                     index
                 }
+                let dateToBeAdded = nextDate ?? Date()
                 result.appendDay(
                     number: number,
-                    date: nextDate ?? Date(),
-                    dateType: .nextMonth
+                    date: dateToBeAdded,
+                    dateType: dateToBeAdded > endingDate
+                    ? .outOfRange
+                    : .nextMonth
                 )
             }
         }
