@@ -25,17 +25,21 @@ public enum CalendarModel {
             case previousMonth
             case nextMonth
             case currentMonth
-            case outOfRange
+        }
+        
+        public enum RangeType {
+            case outOfRange(DateType)
+            case insideRange(DateType)
         }
         
         public let day: Int
         public let date: Date
-        public let dateType: DateType
+        public let dateType: RangeType
     }
 }
 
 extension Array where Element == CalendarModel.Year {
-    mutating func appendDay(number: Int, date: Date, dateType: CalendarModel.Day.DateType) {
+    mutating func appendDay(number: Int, date: Date, dateType: CalendarModel.Day.RangeType) {
         let lastMonths = self[self.endIndex-1].months
         self[self.endIndex-1]
             .months[lastMonths.endIndex-1]

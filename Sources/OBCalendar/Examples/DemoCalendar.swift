@@ -64,7 +64,7 @@ struct DemoCalendar: View {
         OBCalendar(years: years) { model,scrollProxy in 
             ZStack {
                 let day = model.day
-                if day.dateType == .currentMonth {
+                if case .insideRange(.currentMonth) = model.day.dateType {
                     Text("\(day.day)")
                         .foregroundColor(
                             selectedDate == day.date
@@ -78,8 +78,8 @@ struct DemoCalendar: View {
             .frame(width: 35, height: 35)
             .background(
                 ContentBuilder.buildContent {
-                    if selectedDate == model.day.date
-                        && model.day.dateType == .currentMonth {
+                    if selectedDate == model.day.date,
+                       case .insideRange(.currentMonth) = model.day.dateType {
                         Circle()
                             .foregroundColor(.green)
                     }

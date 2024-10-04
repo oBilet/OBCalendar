@@ -56,7 +56,7 @@ public enum CalendarModelBuilder {
             result.appendDay(
                 number: currentDay,
                 date: currentDate,
-                dateType: .currentMonth
+                dateType: .insideRange(.currentMonth)
             )
             
             if let nextDay = calendar.date(byAdding: .day, value: 1, to: currentDate) {
@@ -118,8 +118,12 @@ extension CalendarModelBuilder {
                     number: calendar.component(.day, from: dateToBeAdded),
                     date: dateToBeAdded,
                     dateType: dateToBeAdded < startingDate
-                    ? .outOfRange
-                    : .previousMonth
+                    ? .outOfRange(
+                        calendar.compare(dateToBeAdded, to: startingDate, toGranularity: .month) == .orderedSame
+                        ? .currentMonth
+                        : .previousMonth
+                    )
+                    : .insideRange(.previousMonth)
                 )
             }
         }
@@ -151,8 +155,12 @@ extension CalendarModelBuilder {
                     number: number,
                     date: dateToBeAdded,
                     dateType: dateToBeAdded > endingDate
-                    ? .outOfRange
-                    : .nextMonth
+                    ? .outOfRange(
+                        calendar.compare(dateToBeAdded, to: endingDate, toGranularity: .month) == .orderedSame
+                        ? .currentMonth
+                        : .nextMonth
+                    )
+                    : .insideRange(.nextMonth)
                 )
             }
         }
