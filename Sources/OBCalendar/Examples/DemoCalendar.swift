@@ -42,16 +42,16 @@ struct DemoCalendar: View {
     var headerView: some View {
         HStack {
             Image(systemName: "calendar")
-            Text("Gidiş Tarihi")
+            Text("Departure Date")
             Spacer()
             Divider()
             Image(systemName: "checkmark")
-            Text("UYGULA")
+            Text("APPLY")
         }
     }
     
     var daysView: some View {
-        let days = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
+        let days = getShortLocalizedWeekdays()
         return HStack {
             ForEach(days.indices, id: \.self) { index in
                 Text(days[index])
@@ -64,7 +64,7 @@ struct DemoCalendar: View {
         OBCalendar(years: years) { model,scrollProxy in 
             ZStack {
                 let day = model.day
-                if case .insideRange(.currentMonth) = model.day.dateType {
+                if case .insideRange(.currentMonth) = model.day.rangeType {
                     Text("\(day.day)")
                         .foregroundColor(
                             selectedDate == day.date
@@ -79,7 +79,7 @@ struct DemoCalendar: View {
             .background(
                 ContentBuilder.buildContent {
                     if selectedDate == model.day.date,
-                       case .insideRange(.currentMonth) = model.day.dateType {
+                       case .insideRange(.currentMonth) = model.day.rangeType {
                         Circle()
                             .foregroundColor(.green)
                     }
@@ -119,13 +119,35 @@ struct DemoCalendar: View {
     
     func getMonthName(
         from month: Int,
-        localeIdentifier: String = "tr_TR"
+        localeIdentifier: String = "en_US"
     ) -> String {
         let date = makeDate(from: month)
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: localeIdentifier)
         dateFormatter.dateFormat = "MMMM"
         return dateFormatter.string(from: date)
+    }
+    
+    func getShortLocalizedWeekdays(for localeIdentifier: String = "en_US") -> [String] {
+        // Create a Locale object from the localeIdentifier string
+        let locale = Locale(identifier: localeIdentifier)
+        
+        // Use the default calendar and set the locale
+        var calendar = Calendar.current
+        calendar.locale = locale
+        
+        // Get the index of the first weekday (e.g., Sunday = 1, Monday = 2)
+        let firstWeekday = calendar.firstWeekday
+        
+        // Get the localized short names of the weekdays (e.g., "Mon", "Tue", "Wed")
+        let shortWeekdays = calendar.shortWeekdaySymbols
+        
+        // Rearrange the weekdays starting from the first weekday
+        let firstWeekdayIndex = firstWeekday - 1 // Adjust because firstWeekday is 1-based
+        let reorderedShortWeekdays = Array(shortWeekdays[firstWeekdayIndex...]) + Array(shortWeekdays[..<firstWeekdayIndex])
+        
+        // Return the reordered short weekday names
+        return reorderedShortWeekdays
     }
 }
 
