@@ -117,7 +117,7 @@ public struct OBCalendar<
     ) { model, scrollProxy in
         
         ZStack {
-            if case .insideRange(.currentMonth) = model.day.dateType {
+            if case .insideRange(.currentMonth) = model.day.rangeType {
                 Text("\(model.day.day)")
             } else {
                 placeholderView
