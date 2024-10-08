@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-enum ContentBuilder {
-    static func buildContent<BuiltContent: View>(@ViewBuilder content: () -> BuiltContent) -> BuiltContent {
+public enum ContentBuilder {
+    public static func buildContent<BuiltContent: View>(@ViewBuilder content: () -> BuiltContent) -> BuiltContent {
         content()
     }
     

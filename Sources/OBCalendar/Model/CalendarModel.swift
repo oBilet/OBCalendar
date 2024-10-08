@@ -34,7 +34,7 @@ public enum CalendarModel {
         
         public let day: Int
         public let date: Date
-        public let dateType: RangeType
+        public let rangeType: RangeType
     }
 }
 
@@ -48,7 +48,7 @@ extension Array where Element == CalendarModel.Year {
                 .init(
                     day: number,
                     date: date,
-                    dateType: dateType
+                    rangeType: dateType
                 )
             )
     }
