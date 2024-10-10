@@ -7,18 +7,30 @@
 
 import SwiftUI
 
-struct DemoCalendar: View {
-    
-    let years: [CalendarModel.Year] = {
+private extension DemoCalendar {
+    private static func getYears(from calendar: Calendar) -> [CalendarModel.Year] {
         let today = Date()
-        let nextYear = Calendar.current.date(byAdding: .year, value: 1, to: today)
+        let nextYear = calendar.date(byAdding: .year, value: 1, to: today)
         return CalendarModelBuilder.defaultLayout(
+            calendar: calendar,
             startingDate: today,
             endingDate: nextYear!
         )
-    }()
+    }
+}
+
+struct DemoCalendar: View {
+    
+    let years: [CalendarModel.Year]
     
     @State var selectedDate: Date?
+    
+    let calendar: Calendar
+    
+    init(calendar: Calendar) {
+        self.years = Self.getYears(from: calendar)
+        self.calendar = calendar
+    }
     
     var body: some View {
         VStack {
@@ -51,7 +63,7 @@ struct DemoCalendar: View {
     }
     
     var daysView: some View {
-        let days = getShortLocalizedWeekdays()
+        let days = getShortLocalizedWeekdays(for: calendar)
         return HStack {
             ForEach(days.indices, id: \.self) { index in
                 Text(days[index])
@@ -114,43 +126,36 @@ struct DemoCalendar: View {
     
     func makeDate(from month: Int) -> Date {
         let components = DateComponents(month: month)
-        return Calendar.current.date(from: components) ?? Date()
+        return calendar.date(from: components) ?? Date()
     }
     
     func getMonthName(
-        from month: Int,
-        localeIdentifier: String = "en_US"
+        from month: Int
     ) -> String {
         let date = makeDate(from: month)
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: localeIdentifier)
+        dateFormatter.locale = Locale(identifier: calendar.locale?.identifier ?? "")
         dateFormatter.dateFormat = "MMMM"
         return dateFormatter.string(from: date)
     }
     
-    func getShortLocalizedWeekdays(for localeIdentifier: String = "en_US") -> [String] {
-        // Create a Locale object from the localeIdentifier string
-        let locale = Locale(identifier: localeIdentifier)
-        
-        // Use the default calendar and set the locale
-        var calendar = Calendar.current
-        calendar.locale = locale
-        
-        // Get the index of the first weekday (e.g., Sunday = 1, Monday = 2)
+    func getShortLocalizedWeekdays(
+        for calendar: Calendar
+    ) -> [String] {
         let firstWeekday = calendar.firstWeekday
         
-        // Get the localized short names of the weekdays (e.g., "Mon", "Tue", "Wed")
         let shortWeekdays = calendar.shortWeekdaySymbols
+        let firstWeekdayIndex = firstWeekday - 1
         
-        // Rearrange the weekdays starting from the first weekday
-        let firstWeekdayIndex = firstWeekday - 1 // Adjust because firstWeekday is 1-based
-        let reorderedShortWeekdays = Array(shortWeekdays[firstWeekdayIndex...]) + Array(shortWeekdays[..<firstWeekdayIndex])
+        let reorderedShortWeekdays = Array(shortWeekdays[firstWeekdayIndex...])
+        + Array(shortWeekdays[..<firstWeekdayIndex])
         
-        // Return the reordered short weekday names
         return reorderedShortWeekdays
     }
 }
 
 #Preview {
-    DemoCalendar()
+    var calendar = Calendar.current
+    calendar.locale = Locale(identifier: "tr_US")
+    return DemoCalendar(calendar: calendar)
 }
