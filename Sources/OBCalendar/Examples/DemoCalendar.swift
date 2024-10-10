@@ -17,7 +17,48 @@ private struct RoundedCornersShape: Shape {
     }
 }
 
+extension Dictionary where Key == Date?, Value == String {
+    func yearExists(year: Int, calendar: Calendar) -> Bool {
+        self.contains { element in
+            if let date = element.key {
+                year == calendar.component(.year, from: date)
+            } else {
+                false
+            }
+        }
+    }
+    
+    func get(year: Int, month: Int, day: Int, calendar: Calendar) -> Dictionary<Date?, String>.Element? {
+        self.first(where: { element in
+            if let date = element.key {
+                year == calendar.component(.year, from: date)
+                && month == calendar.component(.month, from: date)
+                && day == calendar.component(.day, from: date)
+            } else {
+                false
+            }
+        })
+    }
+    
+    func contains(date: Date) -> Bool {
+        self.contains { element in
+            element.key == date
+        }
+    }
+}
+
 private extension DemoCalendar {
+    
+    static func makeSpecialDays(calendar: Calendar) -> [Date?: String] {
+        [
+            calendar.date(from: DateComponents(year: 2025, month: 1, day: 1)): "New Year's Day",
+            calendar.date(from: DateComponents(year: 2025, month: 4, day: 23)): "National Sovereignty and Children's Day",
+            calendar.date(from: DateComponents(year: 2025, month: 5, day: 1)): "Labor and Solidarity Day",
+            calendar.date(from: DateComponents(year: 2025, month: 8, day: 30)): "Victory Day",
+            calendar.date(from: DateComponents(year: 2025, month: 10, day: 29)): "Republic Day"
+        ]
+    }
+    
     static func getYears(from calendar: Calendar) -> [CalendarModel.Year] {
         let today = Date()
         let todayComponents = DateComponents(
@@ -37,11 +78,13 @@ private extension DemoCalendar {
 
 struct DemoCalendar: View {
     
+    @State var specialDaysVisible = false
     @State var doubleSelection = false
     @State var firstSelectedDate: Date?
     @State var secondSelectedDate: Date?
     
     let years: [CalendarModel.Year]
+    let specialDays: [Date?: String]
     
     let calendar: Calendar
     
@@ -51,12 +94,16 @@ struct DemoCalendar: View {
     
     init(calendar: Calendar) {
         self.years = Self.getYears(from: calendar)
+        self.specialDays = Self.makeSpecialDays(calendar: calendar)
         self.calendar = calendar
     }
     
     var body: some View {
         VStack {
             Spacer()
+            
+            specialDaysSwitch
+                .fixedSize()
             
             selectionSwitch
                 .fixedSize()
@@ -78,14 +125,18 @@ struct DemoCalendar: View {
     }
     
     var selectionSwitch: some View {
-        contentBuilder {
-            Toggle(isOn: $doubleSelection) {
-                Text("Double Selection")
-            }
-            .onChange(of: doubleSelection) { _ in
-                firstSelectedDate = nil
-                secondSelectedDate = nil
-            }
+        Toggle(isOn: $doubleSelection) {
+            Text("Double Selection")
+        }
+        .onChange(of: doubleSelection) { _ in
+            firstSelectedDate = nil
+            secondSelectedDate = nil
+        }
+    }
+    
+    var specialDaysSwitch: some View {
+        Toggle(isOn: $specialDaysVisible) {
+            Text("Special Days")
         }
     }
     
@@ -112,11 +163,10 @@ struct DemoCalendar: View {
     
     var calendarView: some View {
         OBCalendar(
-            years: years,
-            lazyDays: true
+            years: years
         ) { model,scrollProxy in
             
-            modifyDayView(model: model.day) {
+            let dayView = modifyDayView(model: model.day) {
                 Text("\(model.day.day)")
                     .frame(height: 35)
                     .frame(maxWidth: .infinity)
@@ -130,6 +180,26 @@ struct DemoCalendar: View {
                 }
             }
             
+            
+            if case .insideRange(.currentMonth) = model.day.rangeType,
+               specialDays.contains(date: model.day.date),
+               specialDaysVisible {
+                dayView
+                    .overlay(
+                        VStack(alignment: .trailing) {
+                            Image(systemName: "circle.fill")
+                                .resizable()
+                                .frame(width: 6, height: 6)
+                                .foregroundColor(.blue)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                            
+                            Spacer()
+                        }.padding(12)
+                    )
+            } else {
+                dayView
+            }
+            
         } monthContent: { model, scrollProxy, daysView in
             VStack {
                 HStack {
@@ -141,10 +211,43 @@ struct DemoCalendar: View {
                 Divider()
                 
                 daysView
+                
+                if specialDaysVisible {
+                    makeSpecialDaysView(year: model.year.year, month: model.month)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                }
             }
         } yearContent: { year, scrollProxy, monthsView in
             monthsView
                 .padding(.top, 8)
+        }
+    }
+    
+    func makeSpecialDaysView(year: Int, month: CalendarModel.Month) -> some View {
+        contentBuilder {
+            if specialDays.yearExists(year: year, calendar: calendar) {
+                ForEach(month.days.indices, id: \.self) { index in
+                    let day = month.days[index]
+                    if case .insideRange(.currentMonth) = day.rangeType,
+                       let specialDay = specialDays.get(
+                        year: year,
+                        month: month.month,
+                        day: day.day,
+                        calendar: calendar
+                    ) {
+                        HStack {
+                            Image(systemName: "star.fill")
+                                .resizable()
+                                .frame(width: 12, height: 12)
+                                .aspectRatio(contentMode: .fit)
+                                .foregroundColor(.blue)
+                            
+                            Text(specialDay.value)
+                        }
+                    }
+                }
+            }
         }
     }
     
