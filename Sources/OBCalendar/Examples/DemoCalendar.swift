@@ -7,13 +7,29 @@
 
 import SwiftUI
 
+private struct RoundedCornersShape: Shape {
+    var corners: UIRectCorner
+    var radius: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
+
 private extension DemoCalendar {
-    private static func getYears(from calendar: Calendar) -> [CalendarModel.Year] {
+    static func getYears(from calendar: Calendar) -> [CalendarModel.Year] {
         let today = Date()
-        let nextYear = calendar.date(byAdding: .year, value: 1, to: today)
+        let todayComponents = DateComponents(
+            year: calendar.component(.year, from: today),
+            month: calendar.component(.month, from: today),
+            day: 1
+        )
+        let startingDayOfMonth = calendar.date(from: todayComponents)!
+        let nextYear = calendar.date(byAdding: .year, value: 1, to: startingDayOfMonth)
         return CalendarModelBuilder.defaultLayout(
             calendar: calendar,
-            startingDate: today,
+            startingDate: startingDayOfMonth,
             endingDate: nextYear!
         )
     }
@@ -21,11 +37,17 @@ private extension DemoCalendar {
 
 struct DemoCalendar: View {
     
+    @State var doubleSelection = false
+    @State var firstSelectedDate: Date?
+    @State var secondSelectedDate: Date?
+    
     let years: [CalendarModel.Year]
     
-    @State var selectedDate: Date?
-    
     let calendar: Calendar
+    
+    let selectedBetweenBackground = Color(UIColor.systemGreen.withAlphaComponent(0.25))
+    let selectedBackground: some View = Circle()
+        .foregroundColor(.green)
     
     init(calendar: Calendar) {
         self.years = Self.getYears(from: calendar)
@@ -35,6 +57,10 @@ struct DemoCalendar: View {
     var body: some View {
         VStack {
             Spacer()
+            
+            selectionSwitch
+                .fixedSize()
+            
             headerView
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(8)
@@ -48,6 +74,18 @@ struct DemoCalendar: View {
                 .shadow(color: .gray, radius: 1, x: 0, y: 2)
             
             calendarView
+        }
+    }
+    
+    var selectionSwitch: some View {
+        contentBuilder {
+            Toggle(isOn: $doubleSelection) {
+                Text("Double Selection")
+            }
+            .onChange(of: doubleSelection) { _ in
+                firstSelectedDate = nil
+                secondSelectedDate = nil
+            }
         }
     }
     
@@ -73,32 +111,23 @@ struct DemoCalendar: View {
     }
     
     var calendarView: some View {
-        OBCalendar(years: years) { model,scrollProxy in 
-            ZStack {
-                let day = model.day
-                if case .insideRange(.currentMonth) = model.day.rangeType {
-                    Text("\(day.day)")
-                        .foregroundColor(
-                            selectedDate == day.date
-                            ? .white
-                            : .black
-                        )
-                } else {
-                    Color.clear
-                }
+        OBCalendar(
+            years: years,
+            lazyDays: true
+        ) { model,scrollProxy in
+            
+            modifyDayView(model: model.day) {
+                Text("\(model.day.day)")
+                    .frame(height: 35)
+                    .frame(maxWidth: .infinity)
             }
-            .frame(width: 35, height: 35)
-            .background(
-                ContentBuilder.buildContent {
-                    if selectedDate == model.day.date,
-                       case .insideRange(.currentMonth) = model.day.rangeType {
-                        Circle()
-                            .foregroundColor(.green)
-                    }
-                }
-            )
+            .padding(.vertical, 4)
             .onTapGesture {
-                selectedDate = model.day.date
+                if doubleSelection {
+                    selectDouble(date: model.day.date)
+                } else {
+                    selectSingle(date: model.day.date)
+                }
             }
             
         } monthContent: { model, scrollProxy, daysView in
@@ -107,6 +136,7 @@ struct DemoCalendar: View {
                     Text(getMonthName(from: model.month.month))
                     Text(formatYear(model.year.year))
                 }
+                .padding(8)
                 
                 Divider()
                 
@@ -115,6 +145,104 @@ struct DemoCalendar: View {
         } yearContent: { year, scrollProxy, monthsView in
             monthsView
                 .padding(.top, 8)
+        }
+    }
+    
+    func selectSingle(date: Date) {
+        secondSelectedDate = nil
+        firstSelectedDate = date
+    }
+    
+    func selectDouble(date: Date) {
+        if firstSelectedDate == nil {
+            firstSelectedDate = date
+        } else if secondSelectedDate == nil {
+            if let firstSelectedDate,
+                date < firstSelectedDate {
+                secondSelectedDate = firstSelectedDate
+                self.firstSelectedDate = date
+            } else {
+                secondSelectedDate = date
+            }
+        } else {
+            firstSelectedDate = date
+            secondSelectedDate = nil
+        }
+    }
+    
+    func modifySelectedDayView<Content: View>(date: Date, @ViewBuilder content: () -> Content) -> some View {
+        contentBuilder {
+            
+            let modifiedContent = content()
+                .background(
+                    selectedBackground
+                )
+                .foregroundColor(.white)
+            
+            let isFirstSelected = date == firstSelectedDate && secondSelectedDate != nil
+            let isSecondSelected = date == secondSelectedDate && firstSelectedDate != nil
+            let isSingleSelected = firstSelectedDate == nil || secondSelectedDate == nil
+            
+            let config: (corners: UIRectCorner, edges: Edge.Set) = isFirstSelected
+            ? ([.topLeft, .bottomLeft], .leading)
+            : isSecondSelected
+            ? ([.topRight, .bottomRight], .trailing)
+            : ([], .all)
+            
+            if isSingleSelected {
+                modifiedContent
+            } else {
+                modifiedContent
+                    .background(
+                        selectedBetweenBackground
+                            .clipShape(
+                                RoundedCornersShape(corners: config.corners, radius: 17.5)
+                            )
+                            .padding(config.edges)
+                    )
+            }
+        }
+    }
+    
+    func modifyBetweenSelectedDateView<Content: View>(date: Date, @ViewBuilder content: () -> Content) -> some View {
+        contentBuilder {
+            
+            if let firstSelectedDate,
+                let secondSelectedDate,
+                date > firstSelectedDate && date < secondSelectedDate {
+                content()
+                    .background(
+                        selectedBetweenBackground
+                    )
+            } else {
+                content()
+            }
+        }
+    }
+    
+    func modifyDayView<Content: View>(
+        model: CalendarModel.Day,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        contentBuilder {
+            if case .insideRange(.currentMonth) = model.rangeType {
+                
+                if model.date == firstSelectedDate || model.date == secondSelectedDate {
+                    
+                    modifySelectedDayView(
+                        date: model.date,
+                        content: content
+                    )
+                    
+                } else {
+                    modifyBetweenSelectedDateView(
+                        date: model.date,
+                        content: content
+                    )
+                }
+            } else {
+                Color.clear
+            }
         }
     }
     
@@ -152,10 +280,14 @@ struct DemoCalendar: View {
         
         return reorderedShortWeekdays
     }
+    
+    private func contentBuilder<Content: View>(@ViewBuilder content: () -> Content) -> Content {
+        content()
+    }
 }
 
 #Preview {
     var calendar = Calendar.current
-    calendar.locale = Locale(identifier: "tr_US")
+    calendar.locale = Locale(identifier: "en_US")
     return DemoCalendar(calendar: calendar)
 }
