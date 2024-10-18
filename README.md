@@ -16,14 +16,14 @@
 <div align="center">
   <table>
     <tr>
-      <td><img width=300 src="https://github.com/developerburakgul/OBCalendarDemoPrivate/blob/main/Sources/OBCalendar/ObiletCalendar.docc/Resources/ForReadme/firstSS.png"></td>
-      <td><img width=300 src="https://github.com/developerburakgul/OBCalendarDemoPrivate/blob/main/Sources/OBCalendar/ObiletCalendar.docc/Resources/ForReadme/secondSS.png"></td>
-      <td><img width=300 src="https://github.com/developerburakgul/OBCalendarDemoPrivate/blob/main/Sources/OBCalendar/ObiletCalendar.docc/Resources/ForReadme/thirdSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/firstSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/secondSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/thirdSS.png"></td>
     </tr>
     <tr>
-     <td><img width=300 src="https://github.com/developerburakgul/OBCalendarDemoPrivate/blob/main/Sources/OBCalendar/ObiletCalendar.docc/Resources/ForReadme/fourthSS.png"></td>
-      <td><img width=300 src="https://github.com/developerburakgul/OBCalendarDemoPrivate/blob/main/Sources/OBCalendar/ObiletCalendar.docc/Resources/ForReadme/fifthSS.png"></td>
-      <td><img width=300 src="https://github.com/developerburakgul/OBCalendarDemoPrivate/blob/main/Sources/OBCalendar/ObiletCalendar.docc/Resources/ForReadme/sixthSS.png"></td>
+     <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/fourthSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/fifthSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/sixthSS.png"></td>
     </tr>
   </table>
 </div>
