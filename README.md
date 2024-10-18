@@ -2,7 +2,7 @@
 # OBCalendar
 
 
-- `OBCalendar` is designed to allow you to easily create your own custom calendars.With this structure, you can customize days, months, years. In additional you can change localization of calendar and display days within specific ranges.
+- `OBCalendar` is a SwiftUI-based calendar library designed to allow you to easily create your own custom calendars. With this structure, you can customize the days, months, and years. Additionally, you can change the localization of the calendar and display days within specific ranges.
 - Users set the `startDate` and `endDate` in `OBCalendar`, and the range is created automatically.
 
 
@@ -64,6 +64,13 @@ return OBCalendar(startingDate: today, endingDate: twoYearsLater) { model, scrol
 - The first model consists of `CalendarModel.Year`, `CalendarModel.Month` and `CalendarModel.Day` and a view is created for each day using this model in the first block
 - The second model consists of `CalendarModel.Year` and `CalendarModel.Month`. In block 2, you can customize the view for each month by using this model and the collection of `day views` from the previous block and adding `daysView`.
 - The third model consists of `CalendarModel.Year`.  In block 3, using this model and the collection of `month views` from the previous block, `monthsView` is created and you can customize the view for each year by adding
+
+- You can fully customize the view for each day, month, and year using SwiftUI blocks, providing a seamless and dynamic user experience.
+
+****
+
+Feel free to explore the SwiftUI-powered flexibility of `OBCalendar` to meet your custom calendar needs!
+
 
 
 
