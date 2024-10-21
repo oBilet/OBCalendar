@@ -15,6 +15,15 @@ extension OBCalendar {
         lazyYears: Bool = false,
         lazyMonths: Bool = false,
         lazyDays: Bool = false,
+        dayScrollEnabled: Bool = false,
+        dayScrollAxis: Axis.Set = .vertical,
+        dayGridItems: [GridItem] = Array(1...7).map { _ in .init() },
+        monthScrollEnabled: Bool = false,
+        monthScrollAxis: Axis.Set = .vertical,
+        monthGridItems: [GridItem] = [GridItem()],
+        yearScrollEnabled: Bool = true,
+        yearScrollAxis: Axis.Set = .vertical,
+        yearGridItems: [GridItem] = [GridItem()],
         
         @ViewBuilder dayContent: @escaping (
             _ model: (
@@ -54,6 +63,15 @@ extension OBCalendar {
         self.yearContent = yearContent
         self.monthContent = monthContent
         self.dayContent = dayContent
+        self.dayScrollEnabled = dayScrollEnabled
+        self.dayScrollAxis = dayScrollAxis
+        self.dayGridItems = dayGridItems
+        self.monthScrollEnabled = monthScrollEnabled
+        self.monthScrollAxis = monthScrollAxis
+        self.monthGridItems = monthGridItems
+        self.yearScrollEnabled = yearScrollEnabled
+        self.yearScrollAxis = yearScrollAxis
+        self.yearGridItems = yearGridItems
     }
     
     //MARK: - Start-end date
@@ -64,6 +82,15 @@ extension OBCalendar {
         lazyYears: Bool = false,
         lazyMonths: Bool = false,
         lazyDays: Bool = false,
+        dayScrollEnabled: Bool = false,
+        dayScrollAxis: Axis.Set = .vertical,
+        dayGridItems: [GridItem] = Array(1...7).map { _ in .init() },
+        monthScrollEnabled: Bool = false,
+        monthScrollAxis: Axis.Set = .vertical,
+        monthGridItems: [GridItem] = [GridItem()],
+        yearScrollEnabled: Bool = true,
+        yearScrollAxis: Axis.Set = .vertical,
+        yearGridItems: [GridItem] = [GridItem()],
         @ViewBuilder dayContent: @escaping (
             _ model: (
                 year: CalendarModel.Year,
@@ -100,11 +127,21 @@ extension OBCalendar {
             startingDate: startingDate,
             endingDate: endingDate
         )
+        
         self.init(
             years: years,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
             lazyDays: lazyDays,
+            dayScrollEnabled: dayScrollEnabled,
+            dayScrollAxis: dayScrollAxis,
+            dayGridItems: dayGridItems,
+            monthScrollEnabled: monthScrollEnabled,
+            monthScrollAxis: monthScrollAxis,
+            monthGridItems: monthGridItems,
+            yearScrollEnabled: yearScrollEnabled,
+            yearScrollAxis: yearScrollAxis,
+            yearGridItems: yearGridItems,
             dayContent: dayContent,
             monthContent: monthContent,
             yearContent: yearContent

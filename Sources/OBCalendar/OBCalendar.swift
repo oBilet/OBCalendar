@@ -48,36 +48,42 @@ public struct OBCalendar<
         )
     ) -> Day
 
-    let dayGridItem: [GridItem] = [
-        .init(spacing: .zero),
-        .init(spacing: .zero),
-        .init(spacing: .zero),
-        .init(spacing: .zero),
-        .init(spacing: .zero),
-        .init(spacing: .zero),
-        .init(spacing: .zero)
-    ]
+    let dayScrollEnabled: Bool
+    let dayScrollAxis: Axis.Set
+    let dayGridItems: [GridItem]
+    let monthScrollEnabled: Bool
+    let monthScrollAxis: Axis.Set
+    let monthGridItems: [GridItem]
+    let yearScrollEnabled: Bool
+    let yearScrollAxis: Axis.Set
+    let yearGridItems: [GridItem]
     
     public var body: some View {
         OBCollectionView(
             data: years,
             isLazy: lazyYears,
-            gridSpacing: .zero
+            axis: yearScrollAxis,
+            gridItems: yearGridItems,
+            gridSpacing: .zero,
+            scrollEnabled: yearScrollEnabled
         ) { year, yearIndex, yearScrollProxy in
             
             let monthsView = OBCollectionView(
                 data: year.months,
                 isLazy: lazyMonths,
+                axis: monthScrollAxis,
+                gridItems: monthGridItems,
                 gridSpacing: .zero,
-                scrollEnabled: false
+                scrollEnabled: monthScrollEnabled
             ) { month, monthIndex, monthScrollProxy in
                 
                 let daysView = OBCollectionView(
                     data: month.days,
                     isLazy: lazyDays,
-                    gridItems: dayGridItem,
+                    axis: dayScrollAxis,
+                    gridItems: dayGridItems,
                     gridSpacing: .zero,
-                    scrollEnabled: false
+                    scrollEnabled: dayScrollEnabled
                 ) { day,  dayIndex, dayScrollProxy in
                     self.dayContent(
                         (year, month, day),
@@ -113,24 +119,39 @@ public struct OBCalendar<
     return OBCalendar(
         calendar: calendar,
         startingDate: startingDate,
-        endingDate: endingDate
+        endingDate: endingDate,
+        monthGridItems: [
+            .init(),
+            .init()
+        ]
     ) { model, scrollProxy in
         
         ZStack {
             if case .insideRange(.currentMonth) = model.day.rangeType {
                 Text("\(model.day.day)")
+                    .font(.system(size: 3))
             } else {
-                placeholderView
+                Color.clear
             }
         }
-        .frame(width: 35, height: 35)
+            .frame(width: 5, height: 5)
         
     } monthContent: { model, scrollProxy, dayView in
-        VStack {
-            Text(Calendar.current.monthSymbols[model.month.month-1])
-            dayView
+        HStack(alignment: .top) {
+            Divider()
+            VStack {
+                Text("\(Calendar.current.monthSymbols[model.month.month-1]) \(model.year.year)")
+                    .font(.system(size: 10))
+                dayView
+                    .padding(.vertical, 2)
+            }
+            Divider()
         }
     } yearContent: { model, scrollProxy, monthView in
-        monthView
+        VStack {
+            monthView
+                .padding(.vertical)
+            Divider()
+        }
     }
 }
