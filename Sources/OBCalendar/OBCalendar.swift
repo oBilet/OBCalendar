@@ -118,8 +118,8 @@ public struct OBCalendar<
     
     return OBCalendar(
         calendar: calendar,
-        startingDate: startingDate,
-        endingDate: endingDate,
+        startDate: startingDate,
+        endDate: endingDate,
         monthGridItems: [
             .init(),
             .init()

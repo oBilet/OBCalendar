@@ -77,8 +77,8 @@ extension OBCalendar {
     //MARK: - Start-end date
     public init(
         calendar: Calendar = .current,
-        startingDate: Date,
-        endingDate: Date,
+        startDate: Date,
+        endDate: Date,
         lazyYears: Bool = false,
         lazyMonths: Bool = false,
         lazyDays: Bool = false,
@@ -124,8 +124,8 @@ extension OBCalendar {
     ) {
         let years = CalendarModelBuilder.defaultLayout(
             calendar: calendar,
-            startingDate: startingDate,
-            endingDate: endingDate
+            startDate: startDate,
+            endDate: endDate
         )
         
         self.init(

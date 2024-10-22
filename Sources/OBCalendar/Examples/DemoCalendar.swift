@@ -66,12 +66,12 @@ private extension DemoCalendar {
             month: calendar.component(.month, from: today),
             day: 1
         )
-        let startingDayOfMonth = calendar.date(from: todayComponents)!
-        let nextYear = calendar.date(byAdding: .year, value: 1, to: startingDayOfMonth)
+        let firstDayOfMonth = calendar.date(from: todayComponents)!
+        let nextYear = calendar.date(byAdding: .year, value: 1, to: firstDayOfMonth)
         return CalendarModelBuilder.defaultLayout(
             calendar: calendar,
-            startingDate: startingDayOfMonth,
-            endingDate: nextYear!
+            startDate: firstDayOfMonth,
+            endDate: nextYear!
         )
     }
 }

@@ -12,19 +12,19 @@ public enum CalendarModelBuilder {
     //MARK: - Default Layout
     public static func defaultLayout(
         calendar: Calendar = .current,
-        startingDate: Date,
-        endingDate: Date
+        startDate: Date,
+        endDate: Date
     ) -> [CalendarModel.Year] {
         
         var result = [CalendarModel.Year]()
-        result.appendYear(number: calendar.component(.year, from: startingDate))
-        result.appendMonth(number: calendar.component(.month, from: startingDate))
+        result.appendYear(number: calendar.component(.year, from: startDate))
+        result.appendMonth(number: calendar.component(.month, from: startDate))
         
-        var currentDate = startingDate
+        var currentDate = startDate
         
         let weekdayCount = calendar.weekdaySymbols.count
         
-        while currentDate <= endingDate {
+        while currentDate <= endDate {
             
             let isYearChanged = calendar.component(.year, from: currentDate) != result[result.endIndex-1].year
             
@@ -43,12 +43,12 @@ public enum CalendarModelBuilder {
                 }
             }
             
-            if currentDay == 1 || currentDate == startingDate {
+            if currentDay == 1 || currentDate == startDate {
                 addBeginningPlaceholder(
                     calendar: calendar,
                     totalWeekdayCount: weekdayCount,
                     targetDate: currentDate,
-                    startingDate: startingDate,
+                    startingDate: startDate,
                     result: &result
                 )
             }
@@ -63,12 +63,12 @@ public enum CalendarModelBuilder {
                 
                 let isLastDayOfMonth = nextDay.isFirstDayOfMonth(calendar: calendar)
                 
-                if isLastDayOfMonth || currentDate == endingDate {
+                if isLastDayOfMonth || currentDate == endDate {
                     addEndingPlaceholder(
                         calendar: calendar,
                         totalWeekdayCount: weekdayCount,
                         targetDate: currentDate,
-                        endingDate: endingDate,
+                        endingDate: endDate,
                         result: &result
                     )
                 }
