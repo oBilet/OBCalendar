@@ -47,7 +47,7 @@ To integrate `OBCalendar` into your project using Swift Package Manager, follow 
 ```swift
 let today = Date()
 let twoYearsLater = calendar.date(byAdding: .year, value: 2, to: today)!
-return OBCalendar(startingDate: today, endingDate: twoYearsLater) { model, scrollProxy in
+return OBCalendar(startDate: today, endDate: twoYearsLater) { model, scrollProxy in
     // day view goes here
     let day = model.day
     Text("\(day.day)")
