@@ -84,21 +84,21 @@ public enum CalendarModelBuilder {
 }
 
 //MARK: - Private helpers
-extension CalendarModelBuilder {
+private extension CalendarModelBuilder {
     
-    private static func getBeginningPlaceholderCount(calendar: Calendar, totalWeekdayCount: Int, targetDate: Date) -> Int {
+    static func getBeginningPlaceholderCount(calendar: Calendar, totalWeekdayCount: Int, targetDate: Date) -> Int {
         let currentWeekday = calendar.component(.weekday, from: targetDate)
         let firstWeekday = calendar.firstWeekday
         return (currentWeekday - firstWeekday + totalWeekdayCount) % totalWeekdayCount
     }
     
-    private static func getEndingPlaceholderCount(calendar: Calendar, totalWeekdayCount: Int, targetDate: Date) -> Int {
+    static func getEndingPlaceholderCount(calendar: Calendar, totalWeekdayCount: Int, targetDate: Date) -> Int {
         let targetWeekday = calendar.component(.weekday, from: targetDate)
         let firstWeekday = calendar.firstWeekday
         return (totalWeekdayCount - targetWeekday + firstWeekday - 1) % totalWeekdayCount
     }
     
-    private static func addBeginningPlaceholder(
+    static func addBeginningPlaceholder(
         calendar: Calendar,
         totalWeekdayCount: Int,
         targetDate: Date,
@@ -129,7 +129,7 @@ extension CalendarModelBuilder {
         }
     }
     
-    private static func addEndingPlaceholder(
+    static func addEndingPlaceholder(
         calendar: Calendar,
         totalWeekdayCount: Int,
         targetDate: Date,
