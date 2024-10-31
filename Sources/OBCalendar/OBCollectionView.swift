@@ -72,7 +72,7 @@ public struct OBCollectionView<Content: View, DataType>: View {
     }
     
     private func makeContentView(scrollProxy: ScrollViewProxy?) -> some View {
-        ContentBuilder.buildContent {
+        ContentBuilder.build {
             if isLazy {
                 let contentView = makeDataContentView(scrollProxy: scrollProxy)
                 if axis == .vertical {
@@ -120,7 +120,7 @@ public struct OBCollectionView<Content: View, DataType>: View {
             )
         }
         
-        return ContentBuilder.buildContent {
+        return ContentBuilder.build {
             if axis == .vertical {
                 HStack(alignment: .top, spacing: .zero) {
                     ForEach(gridItems.indices, id: \.self) { columnIndex in

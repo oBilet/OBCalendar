@@ -9,7 +9,7 @@ import SwiftUI
 
 enum ContentBuilder {
     
-    static func buildContent<BuiltContent: View>(@ViewBuilder content: () -> BuiltContent) -> BuiltContent {
+    static func build<BuiltContent: View>(@ViewBuilder content: () -> BuiltContent) -> BuiltContent {
         content()
     }
     
@@ -17,7 +17,7 @@ enum ContentBuilder {
         view: CellView,
         gridItem: GridItem
     ) -> some View {
-        buildContent {
+        build {
             switch gridItem.size {
             case .fixed(let size):
                 view
@@ -47,7 +47,7 @@ enum ContentBuilder {
         view: CellView,
         gridItem: GridItem
     ) -> some View {
-        buildContent {
+        build {
             switch gridItem.size {
             case .fixed(let size):
                 view
