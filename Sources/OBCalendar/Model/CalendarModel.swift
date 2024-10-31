@@ -33,9 +33,7 @@ public enum CalendarModel {
             
             var dateType: DateType {
                 switch self {
-                case .outOfRange(let dateType):
-                    dateType
-                case .insideRange(let dateType):
+                case .outOfRange(let dateType), .insideRange(let dateType):
                     dateType
                 }
             }
