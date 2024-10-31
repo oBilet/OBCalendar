@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public extension Task where Success == Never, Failure == Never {
+private extension Task where Success == Never, Failure == Never {
     static func sleep(seconds: Double) async throws {
         let duration = UInt64(seconds * 1_000_000_000)
         try await Task.sleep(nanoseconds: duration)
@@ -15,14 +15,14 @@ public extension Task where Success == Never, Failure == Never {
 }
 
 
-public extension Array {
+private extension Array {
     func shifted(by offset: Int) -> Self {
         let offsetMod = offset % self.count
         return Array(self[offsetMod..<self.count] + self[0..<offsetMod])
     }
 }
 
-class Utility {
+private class Utility {
     static func makeStartingDate(
         using date: Date?,
         calendar: Calendar
@@ -167,40 +167,8 @@ public struct CalendarView<
     
     public var body: some View {
         VStack(spacing: 0) {
-            weeksHeaderView
             contentView
         }
-    }
-    
-    private func makeGridColumns() -> (
-        weekdays: [String],
-        columns: [GridItem]
-    ) {
-        let weekdays = calendar.shortWeekdaySymbols.shifted(by: calendar.firstWeekday-1)
-        var gridColumns: [GridItem] = Array(0..<weekdays.endIndex)
-            .map { _ in .init() }
-        return (weekdays: weekdays, columns: gridColumns)
-    }
-    
-    var weeksHeaderView: some View {
-        HStack {
-            let (weekdays, gridColumns) = makeGridColumns()
-            LazyVGrid(
-                columns: gridColumns
-            ) {
-                ForEach(weekdays.indices, id: \.self) { index in
-                    Text(weekdays[index])
-                }
-            }
-        }
-        .padding(.leading, 20)
-        .padding(.trailing, 16)
-        .padding(.top, 8)
-        .padding(.bottom, 6)
-        .font(.system(size: 13))
-        .background(
-            Color(red: 0.94, green: 0.94, blue: 0.94)
-        )
     }
     
     var contentView: some View {
