@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct CalendarYearView<MonthContent: View>: View {
+public struct BaseCalendarYearView<MonthContent: View>: View {
     
     let model: CalendarModel.Year
     let monthsView: MonthContent

@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-public enum CalendarDayViewDefaults {
+public enum BaseCalendarDayViewDefaults {
     public static let defaultPlaceholder = Color.clear
 }
 
-public struct CalendarDayView<Placeholder: View>: View {
+public struct BaseCalendarDayView<Placeholder: View>: View {
     
     @ViewBuilder
     public static func makeDayView(
         model: CalendarModel.Day,
-        placeholder: some View = CalendarDayViewDefaults.defaultPlaceholder
+        placeholder: some View = BaseCalendarDayViewDefaults.defaultPlaceholder
     ) -> some View {
         if isCurrentMonth(model: model) {
             Text("\(model.day)")
@@ -84,10 +84,10 @@ public struct CalendarDayView<Placeholder: View>: View {
     }
 }
 
-#Preview {
-    CalendarBuilder(
-        calendar: .current,
-        scrollTrigger: .constant("")
-    )
-    .build()
-}
+//#Preview {
+//    CalendarBuilder(
+//        calendar: .current,
+//        scrollTrigger: .constant("")
+//    )
+//    .build()
+//}

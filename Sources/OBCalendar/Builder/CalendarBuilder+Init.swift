@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-public typealias DefaultDayContent = CalendarDayView<Color>
-public typealias DefaultMonthContent = CalendarMonthView<OBCollectionView<CalendarDayView<Color>, CalendarModel.Day>>
-public typealias DefaultYearContent = CalendarYearView<OBCollectionView<CalendarMonthView<OBCollectionView<CalendarDayView<Color>, CalendarModel.Day>>, CalendarModel.Month>>
+public typealias DefaultDayContent = BaseCalendarDayView<Color>
+public typealias DefaultMonthContent = BaseCalendarMonthView<OBCollectionView<_ConditionalContent<BaseCalendarDayView<Color>, _ConditionalContent<BaseCalendarDayView<Color>, Color>>, CalendarModel.Day>>
+public typealias DefaultYearContent = BaseCalendarYearView<OBCollectionView<BaseCalendarMonthView<OBCollectionView<_ConditionalContent<BaseCalendarDayView<Color>, _ConditionalContent<BaseCalendarDayView<Color>, Color>>, CalendarModel.Day>>, CalendarModel.Month>>
 
 public extension CalendarBuilder
 where DayContent == DefaultDayContent,
@@ -20,13 +20,15 @@ where DayContent == DefaultDayContent,
         startDate: Date = Date(),
         yearLimit: Int = 1,
         calendar: Calendar,
-        scrollTrigger: Binding<ScrollIdType?>
+        scrollTrigger: Binding<ScrollIdType?>,
+        includeBlanks: Bool = false
     ) {
         self.init(
             startDate: startDate,
             yearLimit: yearLimit,
             calendar: calendar,
-            scrollTrigger: scrollTrigger
+            scrollTrigger: scrollTrigger,
+            includeBlanks: includeBlanks
         ) { baseView, model in
             baseView
         } monthContent: { baseView, daysView, model in
@@ -45,17 +47,66 @@ where DayContent == DefaultDayContent,
     .build()
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Preview("Day Modifier") {
     CalendarBuilder(
         calendar: .current,
-        scrollTrigger: .constant("")
+        scrollTrigger: .constant(""),
+        includeBlanks: false
     )
     .dayModifier({ baseView, model in
         baseView
-            .foregroundColor(Color(.red))
+            .background(Color.blue)
+            .padding(2)
+            .foregroundColor(.white)
     })
     .build()
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #Preview("Month Modifier") {
     CalendarBuilder(

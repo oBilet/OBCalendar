@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct CalendarView<
+public struct BaseCalendarView<
     DayContent: View,
     MonthContent: View,
     YearContent: View,

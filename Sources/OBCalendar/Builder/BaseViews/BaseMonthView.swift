@@ -21,7 +21,7 @@ private extension Int {
     }
 }
 
-public struct CalendarMonthView<
+public struct BaseCalendarMonthView<
     DayContent: View
 >: View {
     
