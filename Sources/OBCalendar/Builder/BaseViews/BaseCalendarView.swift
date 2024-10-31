@@ -7,74 +7,6 @@
 
 import SwiftUI
 
-private extension Task where Success == Never, Failure == Never {
-    static func sleep(seconds: Double) async throws {
-        let duration = UInt64(seconds * 1_000_000_000)
-        try await Task.sleep(nanoseconds: duration)
-    }
-}
-
-
-private extension Array {
-    func shifted(by offset: Int) -> Self {
-        let offsetMod = offset % self.count
-        return Array(self[offsetMod..<self.count] + self[0..<offsetMod])
-    }
-}
-
-private class Utility {
-    static func makeStartingDate(
-        using date: Date?,
-        calendar: Calendar
-    ) -> Date? {
-        let date = date ?? Date()
-        
-        let targetComponents = calendar.dateComponents([.year, .month], from: date)
-        
-        let resultComponents = DateComponents(
-            year: targetComponents.year,
-            month: targetComponents.month,
-            day: 1
-        )
-        
-        return calendar.date(from: resultComponents)
-    }
-    
-    static func makeEndingDate(
-        using date: Date?,
-        calendar: Calendar
-    ) -> Date? {
-        guard let date,
-              let monthUpperBound = calendar.range(
-                of: .day,
-                in: .month,
-                for: date
-              )?.upperBound
-        else { return nil }
-        
-        let targetComponents = calendar.dateComponents(
-            [.year, .month],
-            from: date
-        )
-        
-        let resultComponents = DateComponents(
-            year: targetComponents.year,
-            month: targetComponents.month,
-            day: monthUpperBound - 1
-        )
-        
-        return calendar.date(from: resultComponents)
-    }
-    
-    static func addYear(
-        to date: Date,
-        value: Int = 1,
-        calendar: Calendar
-    ) -> Date? {
-        calendar.date(byAdding: .year, value: value, to: date)
-    }
-}
-
 public struct CalendarView<
     DayContent: View,
     MonthContent: View,
@@ -141,12 +73,12 @@ public struct CalendarView<
         self.calendar = calendar
         self._scrollTrigger = scrollTrigger
         
-        let targetStartDate = Utility.makeStartingDate(
+        let targetStartDate = CalendarUtility.makeStartingDate(
             using: startDate,
             calendar: calendar
         ) ?? Date()
         
-        let targetEndDate = Utility.addYear(
+        let targetEndDate = CalendarUtility.addYear(
             to: targetStartDate,
             value: yearLimit,
             calendar: calendar
@@ -154,7 +86,7 @@ public struct CalendarView<
         
         self.startDate = targetStartDate
         
-        self.endDate = Utility.makeEndingDate(
+        self.endDate = CalendarUtility.makeEndingDate(
             using: targetEndDate,
             calendar: calendar
         ) ?? Date()
