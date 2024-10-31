@@ -47,23 +47,6 @@ where DayContent == DefaultDayContent,
     .build()
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #Preview("Day Modifier") {
     CalendarBuilder(
         calendar: .current,
@@ -78,35 +61,6 @@ where DayContent == DefaultDayContent,
     })
     .build()
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #Preview("Month Modifier") {
     CalendarBuilder(
