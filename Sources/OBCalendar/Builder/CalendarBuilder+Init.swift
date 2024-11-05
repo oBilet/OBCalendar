@@ -66,11 +66,6 @@ where DayContent == DefaultDayContent,
         calendar: .current,
         scrollTrigger: .constant("")
     )
-    .dayModifier { baseView, model in
-        baseView
-            .foregroundColor(.white)
-            .background(Color.blue)
-    }
 }
 
 #Preview("Horizontal") {
