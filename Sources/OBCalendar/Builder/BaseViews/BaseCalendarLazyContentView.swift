@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct BaseCalendarView<
+public struct BaseCalendarLazyContentView<
     DayContent: View,
     MonthContent: View,
     YearContent: View,
@@ -19,6 +19,18 @@ public struct BaseCalendarView<
     
     let yearLimit: Int
     let calendar: Calendar
+    
+    let lazyYears: Bool
+    let lazyMonths: Bool
+    let dayScrollEnabled: Bool
+    let dayScrollAxis: Axis.Set
+    let dayGridItems: [GridItem]
+    let monthScrollEnabled: Bool
+    let monthScrollAxis: Axis.Set
+    let monthGridItems: [GridItem]
+    let yearScrollEnabled: Bool
+    let yearScrollAxis: Axis.Set
+    let yearGridItems: [GridItem]
     
     @Binding var scrollTrigger: ScrollIdType?
     @State private var appearedOnce = false
@@ -50,6 +62,17 @@ public struct BaseCalendarView<
         yearLimit: Int = 2,
         calendar: Calendar,
         scrollTrigger: Binding<ScrollIdType?>,
+        lazyYears: Bool = false,
+        lazyMonths: Bool = false,
+        dayScrollEnabled: Bool = false,
+        dayScrollAxis: Axis.Set = .vertical,
+        dayGridItems: [GridItem] = Array(0..<7).map { _ in .init(spacing: .zero) }, // 7 day columns by default
+        monthScrollEnabled: Bool = false,
+        monthScrollAxis: Axis.Set = .vertical,
+        monthGridItems: [GridItem] = [.init()],
+        yearScrollEnabled: Bool = true,
+        yearScrollAxis: Axis.Set = .vertical,
+        yearGridItems: [GridItem] = [.init()],
         @ViewBuilder dayContent: @escaping (
             _ model: (
                 year: CalendarModel.Year,
@@ -94,6 +117,18 @@ public struct BaseCalendarView<
         self.dayContent = dayContent
         self.monthContent = monthContent
         self.yearContent = yearContent
+        
+        self.lazyYears = lazyYears
+        self.lazyMonths = lazyMonths
+        self.dayScrollEnabled = dayScrollEnabled
+        self.dayScrollAxis = dayScrollAxis
+        self.dayGridItems = dayGridItems
+        self.monthScrollEnabled = monthScrollEnabled
+        self.monthScrollAxis = monthScrollAxis
+        self.monthGridItems = monthGridItems
+        self.yearScrollEnabled = yearScrollEnabled
+        self.yearScrollAxis = yearScrollAxis
+        self.yearGridItems = yearGridItems
     }
     
     
@@ -146,9 +181,21 @@ public struct BaseCalendarView<
     
     var calendarView: some View {
         OBCalendar(
+            calendar: calendar,
             startDate: startDate,
             endDate: endDate,
-            lazyDays: lazyDays
+            lazyYears: lazyYears,
+            lazyMonths: lazyMonths,
+            lazyDays: lazyDays,
+            dayScrollEnabled: dayScrollEnabled,
+            dayScrollAxis: dayScrollAxis,
+            dayGridItems: dayGridItems,
+            monthScrollEnabled: monthScrollEnabled,
+            monthScrollAxis: monthScrollAxis,
+            monthGridItems: monthGridItems,
+            yearScrollEnabled: yearScrollEnabled,
+            yearScrollAxis: yearScrollAxis,
+            yearGridItems: yearGridItems
         ) { model, scrollProxy in
             dayContent(model)
         } monthContent: { model, scrollProxy, daysView in

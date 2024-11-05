@@ -7,16 +7,20 @@
 
 import SwiftUI
 
-public enum BaseCalendarDayViewDefaults {
-    public static let defaultPlaceholder = Color.clear
+public protocol BaseCalendarDayViewProtocol: View {
+    
+    init(
+        model: (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day),
+        calendar: Calendar
+    )
 }
 
-public struct BaseCalendarDayView<Placeholder: View>: View {
+public struct BaseCalendarDayView: BaseCalendarDayViewProtocol {
     
     @ViewBuilder
     public static func makeDayView(
         model: CalendarModel.Day,
-        placeholder: some View = BaseCalendarDayViewDefaults.defaultPlaceholder
+        placeholder: some View = Color.clear
     ) -> some View {
         if isCurrentMonth(model: model) {
             Text("\(model.day)")
@@ -36,25 +40,12 @@ public struct BaseCalendarDayView<Placeholder: View>: View {
     
     let model: (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day)
     let calendar: Calendar
-    
-    let placeholder: Placeholder
+    let placeholderView = Color.clear
     
     public init(
-        placeholder: Placeholder,
         model: (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day),
         calendar: Calendar
     ) {
-        self.placeholder = placeholder
-        self.model = model
-        self.calendar = calendar
-    }
-    
-    public init(
-        placeholder: Placeholder = Color.clear,
-        model: (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day),
-        calendar: Calendar
-    ) where Placeholder == Color {
-        self.placeholder = placeholder
         self.model = model
         self.calendar = calendar
     }
@@ -76,7 +67,7 @@ public struct BaseCalendarDayView<Placeholder: View>: View {
     
     @ViewBuilder
     private var dayView: some View {
-        Self.makeDayView(model: model.day)
+        Self.makeDayView(model: model.day, placeholder: placeholderView)
     }
     
     private var isDateOlder: Bool {

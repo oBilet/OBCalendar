@@ -8,14 +8,12 @@
 import Foundation
 import SwiftUI
 
-public struct CalendarBuilder<
+public struct OBBaseCalendar<
     DayContent: View,
     MonthContent: View,
     YearContent: View,
     ScrollIdType: Hashable
 > {
-    
-    public typealias BuiltContent = BaseCalendarView<_ConditionalContent<DayContent, _ConditionalContent<DayContent, Color>>, MonthContent, YearContent, ScrollIdType>
     
     public typealias ModifiedDayMonthType<ModifiedDayContent: View> = BaseCalendarMonthView<OBCollectionView<_ConditionalContent<ModifiedDayContent, _ConditionalContent<ModifiedDayContent, Color>>, CalendarModel.Day>>
     
@@ -23,32 +21,32 @@ public struct CalendarBuilder<
     
     public typealias ModifiedMonthYearType<ModifiedMonthContent: View> = BaseCalendarYearView<OBCollectionView<ModifiedMonthContent, CalendarModel.Month>>
     
-    public typealias ModifiedDayBuilder<ModifiedDayContent: View> = CalendarBuilder<
+    public typealias ModifiedDayBuilder<ModifiedDayContent: View> = OBBaseCalendar<
         ModifiedDayContent,
         ModifiedDayMonthType<ModifiedDayContent>,
         ModifiedDayYearType<ModifiedDayContent>,
         ScrollIdType
     >
     
-    public typealias ModifiedMonthBuilder<ModifiedMonthContent: View> = CalendarBuilder<
+    public typealias ModifiedMonthBuilder<ModifiedMonthContent: View> = OBBaseCalendar<
         DayContent,
         ModifiedMonthContent,
         ModifiedMonthYearType<ModifiedMonthContent>,
         ScrollIdType
     >
     
-    public typealias ModifiedYearBuilder<ModifiedYearContent: View> = CalendarBuilder<DayContent, MonthContent, ModifiedYearContent, ScrollIdType>
+    public typealias ModifiedYearBuilder<ModifiedYearContent: View> = OBBaseCalendar<DayContent, MonthContent, ModifiedYearContent, ScrollIdType>
     
     public typealias DayModel = (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day)
     public typealias MonthModel = (year: CalendarModel.Year, month: CalendarModel.Month)
     public typealias YearModel = CalendarModel.Year
     
-    public typealias BaseDayView = BaseCalendarDayView<Color>
+    public typealias BaseDayView = BaseCalendarDayView
     public typealias BaseMonthView = BaseCalendarMonthView<OBCollectionView<_ConditionalContent<DayContent, _ConditionalContent<DayContent, Color>>, CalendarModel.Day>>
     public typealias BaseYearView = BaseCalendarYearView<OBCollectionView<MonthContent, CalendarModel.Month>>
     
     @ViewBuilder private var dayContent: (
-        _ baseView: BaseCalendarDayView<Color>,
+        _ baseView: BaseCalendarDayView,
         _ model: DayModel
     ) -> DayContent
     
@@ -70,12 +68,35 @@ public struct CalendarBuilder<
     var scrollTrigger: Binding<ScrollIdType?>
     var includeBlanks: Bool
     
+    let lazyYears: Bool
+    let lazyMonths: Bool
+    let dayScrollEnabled: Bool
+    let dayScrollAxis: Axis.Set
+    let dayGridItems: [GridItem]
+    let monthScrollEnabled: Bool
+    let monthScrollAxis: Axis.Set
+    let monthGridItems: [GridItem]
+    let yearScrollEnabled: Bool
+    let yearScrollAxis: Axis.Set
+    let yearGridItems: [GridItem]
+    
     internal init(
         startDate: Date,
         yearLimit: Int,
         calendar: Calendar,
         scrollTrigger: Binding<ScrollIdType?>,
         includeBlanks: Bool = false,
+        lazyYears: Bool = false,
+        lazyMonths: Bool = false,
+        dayScrollEnabled: Bool = false,
+        dayScrollAxis: Axis.Set = .vertical,
+        dayGridItems: [GridItem] = Array(0..<7).map { _ in .init() }, // 7 day columns by default
+        monthScrollEnabled: Bool = false,
+        monthScrollAxis: Axis.Set = .vertical,
+        monthGridItems: [GridItem] = [.init()],
+        yearScrollEnabled: Bool = true,
+        yearScrollAxis: Axis.Set = .vertical,
+        yearGridItems: [GridItem] = [.init()],
         
         @ViewBuilder dayContent: @escaping (
             _ baseView: BaseDayView,
@@ -102,6 +123,17 @@ public struct CalendarBuilder<
         self.calendar = calendar
         self.scrollTrigger = scrollTrigger
         self.includeBlanks = includeBlanks
+        self.lazyYears = lazyYears
+        self.lazyMonths = lazyMonths
+        self.dayScrollEnabled = dayScrollEnabled
+        self.dayScrollAxis = dayScrollAxis
+        self.dayGridItems = dayGridItems
+        self.monthScrollEnabled = monthScrollEnabled
+        self.monthScrollAxis = monthScrollAxis
+        self.monthGridItems = monthGridItems
+        self.yearScrollEnabled = yearScrollEnabled
+        self.yearScrollAxis = yearScrollAxis
+        self.yearGridItems = yearGridItems
     }
     
     ///This modifier should be called before monthModifier.
@@ -117,7 +149,18 @@ public struct CalendarBuilder<
             yearLimit: yearLimit,
             calendar: calendar,
             scrollTrigger: scrollTrigger,
-            includeBlanks: includeBlanks
+            includeBlanks: includeBlanks,
+            lazyYears: lazyYears,
+            lazyMonths: lazyMonths,
+            dayScrollEnabled: dayScrollEnabled,
+            dayScrollAxis: dayScrollAxis,
+            dayGridItems: dayGridItems,
+            monthScrollEnabled: monthScrollEnabled,
+            monthScrollAxis: monthScrollAxis,
+            monthGridItems: monthGridItems,
+            yearScrollEnabled: yearScrollEnabled,
+            yearScrollAxis: yearScrollAxis,
+            yearGridItems: yearGridItems
         ) { baseView, model in
             
             if includeBlanks {
@@ -152,6 +195,17 @@ public struct CalendarBuilder<
             calendar: calendar,
             scrollTrigger: scrollTrigger,
             includeBlanks: includeBlanks,
+            lazyYears: lazyYears,
+            lazyMonths: lazyMonths,
+            dayScrollEnabled: dayScrollEnabled,
+            dayScrollAxis: dayScrollAxis,
+            dayGridItems: dayGridItems,
+            monthScrollEnabled: monthScrollEnabled,
+            monthScrollAxis: monthScrollAxis,
+            monthGridItems: monthGridItems,
+            yearScrollEnabled: yearScrollEnabled,
+            yearScrollAxis: yearScrollAxis,
+            yearGridItems: yearGridItems,
             dayContent: dayContent
         ) { baseView, daysView, model in
             modifier(baseView, daysView, model)
@@ -175,20 +229,44 @@ public struct CalendarBuilder<
             calendar: calendar,
             scrollTrigger: scrollTrigger,
             includeBlanks: includeBlanks,
+            lazyYears: lazyYears,
+            lazyMonths: lazyMonths,
+            dayScrollEnabled: dayScrollEnabled,
+            dayScrollAxis: dayScrollAxis,
+            dayGridItems: dayGridItems,
+            monthScrollEnabled: monthScrollEnabled,
+            monthScrollAxis: monthScrollAxis,
+            monthGridItems: monthGridItems,
+            yearScrollEnabled: yearScrollEnabled,
+            yearScrollAxis: yearScrollAxis,
+            yearGridItems: yearGridItems,
             dayContent: dayContent,
             monthContent: monthContent
         ) { baseView, monthsView, model in
             modifier(baseView, monthsView, model)
         }
     }
+}
+
+extension OBBaseCalendar: View {
     
-    public func build() -> BuiltContent {
-        
-        return BaseCalendarView(
+    public var body: some View {
+        BaseCalendarLazyContentView(
             startDate: startDate,
             yearLimit: yearLimit,
-            calendar: .current,
-            scrollTrigger: scrollTrigger
+            calendar: calendar,
+            scrollTrigger: scrollTrigger,
+            lazyYears: lazyYears,
+            lazyMonths: lazyMonths,
+            dayScrollEnabled: dayScrollEnabled,
+            dayScrollAxis: dayScrollAxis,
+            dayGridItems: dayGridItems,
+            monthScrollEnabled: monthScrollEnabled,
+            monthScrollAxis: monthScrollAxis,
+            monthGridItems: monthGridItems,
+            yearScrollEnabled: yearScrollEnabled,
+            yearScrollAxis: yearScrollAxis,
+            yearGridItems: yearGridItems
         ) { model in
             let view = BaseCalendarDayView(model: model, calendar: calendar)
             if includeBlanks {
@@ -202,7 +280,6 @@ public struct CalendarBuilder<
             }
             
         } monthContent: { model, daysView in
-            //TODO: Change the specialDays array type for it to be comparable with dates
             let view = BaseCalendarMonthView(
                 model: model,
                 daysView: daysView,
@@ -210,6 +287,7 @@ public struct CalendarBuilder<
             )
             
             monthContent(view, daysView, model)
+            
         } yearContent: { model, monthsView in
             let view = BaseCalendarYearView(model: model, monthsView: monthsView)
             yearContent(view, monthsView, model)

@@ -8,6 +8,7 @@
 import SwiftUI
 
 private extension Int {
+    
     var noneFormattedString: String? {
         let formatter = NumberFormatter()
         formatter.numberStyle = .none
@@ -21,9 +22,18 @@ private extension Int {
     }
 }
 
-public struct BaseCalendarMonthView<
-    DayContent: View
->: View {
+public protocol BaseCalendarMonthViewProtocol<DayContent>: View {
+    
+    associatedtype DayContent: View
+    
+    init(
+        model: (year: CalendarModel.Year, month: CalendarModel.Month),
+        daysView: DayContent,
+        calendar: Calendar
+    )
+}
+
+public struct BaseCalendarMonthView<DayContent: View>: BaseCalendarMonthViewProtocol {
     
     private let padding: CGFloat = 12
     
