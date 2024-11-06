@@ -19,8 +19,7 @@ where DayContent == DefaultDayContent,
     init(
         startDate: Date = Date(),
         yearLimit: Int = 1,
-        calendar: Calendar,
-        scrollTrigger: Binding<ScrollIdType?>,
+        calendar: Calendar = .current,
         includeBlanks: Bool = false,
         lazyYears: Bool = false,
         lazyMonths: Bool = false,
@@ -38,7 +37,6 @@ where DayContent == DefaultDayContent,
             startDate: startDate,
             yearLimit: yearLimit,
             calendar: calendar,
-            scrollTrigger: scrollTrigger,
             includeBlanks: includeBlanks,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
@@ -62,17 +60,12 @@ where DayContent == DefaultDayContent,
 }
 
 #Preview("Default") {
-    OBBaseCalendar(
-        calendar: .current,
-        scrollTrigger: .constant("")
-    )
+    OBBaseCalendar()
 }
 
 #Preview("Horizontal") {
     GeometryReader { geometry in
         OBBaseCalendar(
-            calendar: .current,
-            scrollTrigger: .constant(""),
             includeBlanks: false,
             monthScrollAxis: .horizontal,
             yearScrollAxis: .horizontal
@@ -94,47 +87,37 @@ where DayContent == DefaultDayContent,
 }
 
 #Preview("Day Modifier") {
-    OBBaseCalendar(
-        calendar: .current,
-        scrollTrigger: .constant(""),
-        includeBlanks: false
-    )
-    .dayModifier { baseView, model in
-        baseView
-            .background(Color.blue)
-            .padding(2)
-            .foregroundColor(.white)
-    }
+    OBBaseCalendar(includeBlanks: false)
+        .dayModifier { baseView, model in
+            baseView
+                .background(Color.blue)
+                .padding(2)
+                .foregroundColor(.white)
+        }
 }
 
 #Preview("Month Modifier") {
-    OBBaseCalendar(
-        calendar: .current,
-        scrollTrigger: .constant("")
-    )
-    .monthModifier{ baseView, daysView, model in
-        VStack {
-            Text("Modified Months")
-            daysView
+    OBBaseCalendar()
+        .monthModifier{ baseView, daysView, model in
+            VStack {
+                Text("Modified Months")
+                daysView
+            }
+            .padding()
         }
-        .padding()
-    }
 }
 
 #Preview("Modified Day + Modified Month") {
-    OBBaseCalendar(
-        calendar: .current,
-        scrollTrigger: .constant("")
-    )
-    .dayModifier { baseView, model in
-        baseView
-            .foregroundColor(Color(.red))
-    }
-    .monthModifier { baseView, daysView, model in
-        VStack {
-            Text("Modified Months")
-            daysView
+    OBBaseCalendar()
+        .dayModifier { baseView, model in
+            baseView
+                .foregroundColor(Color(.red))
         }
-        .padding()
-    }
+        .monthModifier { baseView, daysView, model in
+            VStack {
+                Text("Modified Months")
+                daysView
+            }
+            .padding()
+        }
 }

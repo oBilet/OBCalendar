@@ -7,11 +7,10 @@
 
 import SwiftUI
 
-public struct BaseCalendarLazyContentView<
+public struct BaseCalendarView<
     DayContent: View,
     MonthContent: View,
-    YearContent: View,
-    ScrollIdType: Hashable
+    YearContent: View
 >: View {
     
     let startDate: Date
@@ -20,8 +19,9 @@ public struct BaseCalendarLazyContentView<
     let yearLimit: Int
     let calendar: Calendar
     
-    let lazyYears: Bool
+    let lazyDays: Bool
     let lazyMonths: Bool
+    let lazyYears: Bool
     let dayScrollEnabled: Bool
     let dayScrollAxis: Axis.Set
     let dayGridItems: [GridItem]
@@ -31,10 +31,6 @@ public struct BaseCalendarLazyContentView<
     let yearScrollEnabled: Bool
     let yearScrollAxis: Axis.Set
     let yearGridItems: [GridItem]
-    
-    @Binding var scrollTrigger: ScrollIdType?
-    @State private var appearedOnce = false
-    @State private var lazyDays = true
     
     @ViewBuilder let dayContent: (
         _ model: (
@@ -61,9 +57,9 @@ public struct BaseCalendarLazyContentView<
         startDate: Date = Date(),
         yearLimit: Int = 2,
         calendar: Calendar,
-        scrollTrigger: Binding<ScrollIdType?>,
-        lazyYears: Bool = false,
+        lazyDays: Bool = false,
         lazyMonths: Bool = false,
+        lazyYears: Bool = false,
         dayScrollEnabled: Bool = false,
         dayScrollAxis: Axis.Set = .vertical,
         dayGridItems: [GridItem] = Array(0..<7).map { _ in .init(spacing: .zero) }, // 7 day columns by default
@@ -94,7 +90,6 @@ public struct BaseCalendarLazyContentView<
     ) {
         self.yearLimit = yearLimit
         self.calendar = calendar
-        self._scrollTrigger = scrollTrigger
         
         let targetStartDate = CalendarUtility.makeStartingDate(
             using: startDate,
@@ -118,8 +113,9 @@ public struct BaseCalendarLazyContentView<
         self.monthContent = monthContent
         self.yearContent = yearContent
         
-        self.lazyYears = lazyYears
+        self.lazyDays = lazyDays
         self.lazyMonths = lazyMonths
+        self.lazyYears = lazyYears
         self.dayScrollEnabled = dayScrollEnabled
         self.dayScrollAxis = dayScrollAxis
         self.dayGridItems = dayGridItems
@@ -133,50 +129,7 @@ public struct BaseCalendarLazyContentView<
     
     
     public var body: some View {
-        VStack(spacing: 0) {
-            contentView
-        }
-    }
-    
-    var contentView: some View {
-        ScrollViewReader { scrollProxy in
-            ContentBuilder.build {
-                if appearedOnce {
-                    calendarView
-                        .onAppear {
-                            if lazyDays {
-                                Task {
-                                    try? await Task.sleep(seconds: 0.2)
-                                    await MainActor.run {
-                                        lazyDays = false
-                                    }
-                                }
-                            }
-                        }
-                } else {
-                    Spacer()
-                        .overlay(
-                            ProgressView()
-                        )
-                }
-            }
-            .onChange(of: scrollTrigger) { newValue in
-                scrollTo(scrollProxy: scrollProxy)
-            }
-            .onChange(of: lazyDays) { newValue in
-                performScrollRequest(
-                    scrollProxy: scrollProxy,
-                    animated: false
-                )
-            }
-        }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                withAnimation(.linear(duration: 0.1)) {
-                    appearedOnce = true
-                }
-            }
-        }
+        calendarView
     }
     
     var calendarView: some View {
@@ -202,33 +155,6 @@ public struct BaseCalendarLazyContentView<
             monthContent(model, daysView)
         } yearContent: { year, scrollProxy, monthsView in
             yearContent(year, monthsView)
-        }
-    }
-    
-    private func scrollTo(
-        scrollProxy: ScrollViewProxy,
-        animated: Bool = false
-    ) {
-        if appearedOnce {
-            performScrollRequest(
-                scrollProxy: scrollProxy,
-                animated: animated
-            )
-        }
-    }
-    
-    private func performScrollRequest(
-        scrollProxy: ScrollViewProxy,
-        animated: Bool = true
-    ) {
-        guard let scrollTrigger
-        else { return }
-        if animated {
-            withAnimation {
-                scrollProxy.scrollTo(scrollTrigger, anchor: .top)
-            }
-        } else {
-            scrollProxy.scrollTo(scrollTrigger, anchor: .top)
         }
     }
 }

@@ -11,8 +11,7 @@ import SwiftUI
 public struct OBBaseCalendar<
     DayContent: View,
     MonthContent: View,
-    YearContent: View,
-    ScrollIdType: Hashable
+    YearContent: View
 > {
     
     public typealias ModifiedDayMonthType<ModifiedDayContent: View> = BaseCalendarMonthView<OBCollectionView<_ConditionalContent<ModifiedDayContent, _ConditionalContent<ModifiedDayContent, Color>>, CalendarModel.Day>>
@@ -24,18 +23,16 @@ public struct OBBaseCalendar<
     public typealias ModifiedDayBuilder<ModifiedDayContent: View> = OBBaseCalendar<
         ModifiedDayContent,
         ModifiedDayMonthType<ModifiedDayContent>,
-        ModifiedDayYearType<ModifiedDayContent>,
-        ScrollIdType
+        ModifiedDayYearType<ModifiedDayContent>
     >
     
     public typealias ModifiedMonthBuilder<ModifiedMonthContent: View> = OBBaseCalendar<
         DayContent,
         ModifiedMonthContent,
-        ModifiedMonthYearType<ModifiedMonthContent>,
-        ScrollIdType
+        ModifiedMonthYearType<ModifiedMonthContent>
     >
     
-    public typealias ModifiedYearBuilder<ModifiedYearContent: View> = OBBaseCalendar<DayContent, MonthContent, ModifiedYearContent, ScrollIdType>
+    public typealias ModifiedYearBuilder<ModifiedYearContent: View> = OBBaseCalendar<DayContent, MonthContent, ModifiedYearContent>
     
     public typealias DayModel = (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day)
     public typealias MonthModel = (year: CalendarModel.Year, month: CalendarModel.Month)
@@ -65,7 +62,6 @@ public struct OBBaseCalendar<
     var startDate: Date
     var yearLimit: Int
     var calendar: Calendar
-    var scrollTrigger: Binding<ScrollIdType?>
     var includeBlanks: Bool
     
     let lazyYears: Bool
@@ -84,7 +80,6 @@ public struct OBBaseCalendar<
         startDate: Date,
         yearLimit: Int,
         calendar: Calendar,
-        scrollTrigger: Binding<ScrollIdType?>,
         includeBlanks: Bool = false,
         lazyYears: Bool = false,
         lazyMonths: Bool = false,
@@ -121,7 +116,6 @@ public struct OBBaseCalendar<
         self.startDate = startDate
         self.yearLimit = yearLimit
         self.calendar = calendar
-        self.scrollTrigger = scrollTrigger
         self.includeBlanks = includeBlanks
         self.lazyYears = lazyYears
         self.lazyMonths = lazyMonths
@@ -148,7 +142,6 @@ public struct OBBaseCalendar<
             startDate: startDate,
             yearLimit: yearLimit,
             calendar: calendar,
-            scrollTrigger: scrollTrigger,
             includeBlanks: includeBlanks,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
@@ -193,7 +186,6 @@ public struct OBBaseCalendar<
             startDate: startDate,
             yearLimit: yearLimit,
             calendar: calendar,
-            scrollTrigger: scrollTrigger,
             includeBlanks: includeBlanks,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
@@ -227,7 +219,6 @@ public struct OBBaseCalendar<
             startDate: startDate,
             yearLimit: yearLimit,
             calendar: calendar,
-            scrollTrigger: scrollTrigger,
             includeBlanks: includeBlanks,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
@@ -251,13 +242,12 @@ public struct OBBaseCalendar<
 extension OBBaseCalendar: View {
     
     public var body: some View {
-        BaseCalendarLazyContentView(
+        BaseCalendarView(
             startDate: startDate,
             yearLimit: yearLimit,
             calendar: calendar,
-            scrollTrigger: scrollTrigger,
-            lazyYears: lazyYears,
             lazyMonths: lazyMonths,
+            lazyYears: lazyYears,
             dayScrollEnabled: dayScrollEnabled,
             dayScrollAxis: dayScrollAxis,
             dayGridItems: dayGridItems,
