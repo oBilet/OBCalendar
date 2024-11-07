@@ -10,8 +10,11 @@ import SwiftUI
 public protocol BaseCalendarDayViewProtocol: View {
     
     init(
-        model: (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day),
-        calendar: Calendar
+        model: (
+            year: CalendarModel.Year,
+            month: CalendarModel.Month,
+            day: CalendarModel.Day
+        )
     )
 }
 
@@ -39,39 +42,25 @@ public struct BaseCalendarDayView: BaseCalendarDayViewProtocol {
     }
     
     let model: (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day)
-    let calendar: Calendar
     let placeholderView = Color.clear
     
     public init(
-        model: (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day),
-        calendar: Calendar
+        model: (
+            year: CalendarModel.Year,
+            month: CalendarModel.Month,
+            day: CalendarModel.Day
+        )
     ) {
         self.model = model
-        self.calendar = calendar
     }
     
     public var body: some View {
-        let targetView = dayView
-            .frame(width: 32, height: 32)
-        
-        ContentBuilder.build {
-            if isDateOlder {
-                targetView
-                    .opacity(0.3)
-            } else {
-                targetView
-            }
-        }
+        Self.makeDayView(
+            model: model.day,
+            placeholder: placeholderView
+        )
+        .frame(width: 32, height: 32)
         .frame(maxWidth: .infinity)
-    }
-    
-    @ViewBuilder
-    private var dayView: some View {
-        Self.makeDayView(model: model.day, placeholder: placeholderView)
-    }
-    
-    private var isDateOlder: Bool {
-        calendar.compare(model.day.date, to: Date(), toGranularity: .day) == .orderedAscending
     }
 }
 

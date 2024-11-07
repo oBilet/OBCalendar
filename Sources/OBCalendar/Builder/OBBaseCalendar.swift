@@ -258,7 +258,7 @@ extension OBBaseCalendar: View {
             yearScrollAxis: yearScrollAxis,
             yearGridItems: yearGridItems
         ) { model in
-            let view = BaseCalendarDayView(model: model, calendar: calendar)
+            let view = BaseCalendarDayView(model: model)
             if includeBlanks {
                 dayContent(view, model)
             } else {
