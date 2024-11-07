@@ -344,7 +344,13 @@ struct DemoCalendar: View {
                     )
                 }
             } else {
-                Color.clear
+                if model.isInRangePreviousMonth {
+                    Color.red
+                } else if model.isInRangeNextMonth {
+                    Color.green
+                } else {
+                    Color.blue
+                }
             }
         }
     }
