@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct OBBaseCalendar<
+public struct OBCalendar<
     DayContent: View,
     MonthContent: View,
     YearContent: View
@@ -20,19 +20,19 @@ public struct OBBaseCalendar<
     
     public typealias ModifiedMonthYearType<ModifiedMonthContent: View> = BaseCalendarYearView<OBCollectionView<ModifiedMonthContent, CalendarModel.Month>>
     
-    public typealias ModifiedDayBuilder<ModifiedDayContent: View> = OBBaseCalendar<
+    public typealias ModifiedDayBuilder<ModifiedDayContent: View> = OBCalendar<
         ModifiedDayContent,
         ModifiedDayMonthType<ModifiedDayContent>,
         ModifiedDayYearType<ModifiedDayContent>
     >
     
-    public typealias ModifiedMonthBuilder<ModifiedMonthContent: View> = OBBaseCalendar<
+    public typealias ModifiedMonthBuilder<ModifiedMonthContent: View> = OBCalendar<
         DayContent,
         ModifiedMonthContent,
         ModifiedMonthYearType<ModifiedMonthContent>
     >
     
-    public typealias ModifiedYearBuilder<ModifiedYearContent: View> = OBBaseCalendar<DayContent, MonthContent, ModifiedYearContent>
+    public typealias ModifiedYearBuilder<ModifiedYearContent: View> = OBCalendar<DayContent, MonthContent, ModifiedYearContent>
     
     public typealias DayModel = (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day)
     public typealias MonthModel = (year: CalendarModel.Year, month: CalendarModel.Month)
@@ -239,7 +239,7 @@ public struct OBBaseCalendar<
     }
 }
 
-extension OBBaseCalendar: View {
+extension OBCalendar: View {
     
     public var body: some View {
         BaseCalendarView(

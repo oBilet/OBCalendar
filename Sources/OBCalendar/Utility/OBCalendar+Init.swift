@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension OBCalendar {
+extension OBBaseCalendar {
     
     //MARK: - Years array
     public init(

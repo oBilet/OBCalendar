@@ -11,7 +11,7 @@ public typealias DefaultDayContent = BaseCalendarDayView
 public typealias DefaultMonthContent = BaseCalendarMonthView<OBCollectionView<_ConditionalContent<BaseCalendarDayView, _ConditionalContent<BaseCalendarDayView, Color>>, CalendarModel.Day>>
 public typealias DefaultYearContent = BaseCalendarYearView<OBCollectionView<BaseCalendarMonthView<OBCollectionView<_ConditionalContent<BaseCalendarDayView, _ConditionalContent<BaseCalendarDayView, Color>>, CalendarModel.Day>>, CalendarModel.Month>>
 
-public extension OBBaseCalendar
+public extension OBCalendar
 where DayContent == DefaultDayContent,
       MonthContent == DefaultMonthContent,
       YearContent == DefaultYearContent
@@ -60,12 +60,12 @@ where DayContent == DefaultDayContent,
 }
 
 #Preview("Default") {
-    OBBaseCalendar()
+    OBCalendar()
 }
 
 #Preview("Horizontal") {
     GeometryReader { geometry in
-        OBBaseCalendar(
+        OBCalendar(
             includeBlanks: false,
             monthScrollAxis: .horizontal,
             yearScrollAxis: .horizontal
@@ -87,7 +87,7 @@ where DayContent == DefaultDayContent,
 }
 
 #Preview("Day Modifier") {
-    OBBaseCalendar(includeBlanks: false)
+    OBCalendar(includeBlanks: true)
         .dayModifier { baseView, model in
             baseView
                 .background(Color.blue)
@@ -97,7 +97,7 @@ where DayContent == DefaultDayContent,
 }
 
 #Preview("Month Modifier") {
-    OBBaseCalendar()
+    OBCalendar()
         .monthModifier{ baseView, daysView, model in
             VStack {
                 Text("Modified Months")
@@ -108,7 +108,7 @@ where DayContent == DefaultDayContent,
 }
 
 #Preview("Modified Day + Modified Month") {
-    OBBaseCalendar()
+    OBCalendar()
         .dayModifier { baseView, model in
             baseView
                 .foregroundColor(Color(.red))
