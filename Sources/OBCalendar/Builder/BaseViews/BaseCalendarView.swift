@@ -133,7 +133,7 @@ public struct BaseCalendarView<
     }
     
     var calendarView: some View {
-        OBCalendar(
+        OBBaseCalendar(
             calendar: calendar,
             startDate: startDate,
             endDate: endDate,

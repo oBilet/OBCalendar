@@ -162,7 +162,7 @@ struct DemoCalendar: View {
     }
     
     var calendarView: some View {
-        OBCalendar(
+        OBBaseCalendar(
             years: years
         ) { model,scrollProxy in
             

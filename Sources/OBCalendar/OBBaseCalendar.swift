@@ -3,7 +3,7 @@
 
 import SwiftUI
 
-public struct OBCalendar<
+public struct OBBaseCalendar<
     Year: View,
     Month: View,
     Day: View
@@ -116,7 +116,7 @@ public struct OBCalendar<
     var calendar = Calendar.current
     calendar.locale = .init(identifier: "en-US")
     
-    return OBCalendar(
+    return OBBaseCalendar(
         calendar: calendar,
         startDate: startingDate,
         endDate: endingDate,
