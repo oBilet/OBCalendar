@@ -225,7 +225,10 @@ public struct OBCollectionView<Content: View, DataType>: View {
             )
             .onPreferenceChange(SizePreferenceKey.self) { value in
                 let current = nonLazyOrthogonalSizes[contentIndex]
-                nonLazyOrthogonalSizes[contentIndex] = max(current, value)
+                let maxVal = max(current, value)
+                if maxVal != current {
+                    nonLazyOrthogonalSizes[contentIndex] = maxVal
+                }
             }
     }
     
@@ -245,7 +248,10 @@ public struct OBCollectionView<Content: View, DataType>: View {
             )
             .onPreferenceChange(SizePreferenceKey.self) { value in
                 let current = nonLazyOrthogonalSizes[contentIndex]
-                nonLazyOrthogonalSizes[contentIndex] = max(current, value)
+                let maxVal = max(current, value)
+                if maxVal != current {
+                    nonLazyOrthogonalSizes[contentIndex] = maxVal
+                }
             }
     }
 }

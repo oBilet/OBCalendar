@@ -18,11 +18,12 @@ where DayContent == DefaultDayContent,
 {
     init(
         startDate: Date = Date(),
-        yearLimit: Int = 1,
+        drawingRange: CalendarDateDrawDif = .year(1),
         calendar: Calendar = .current,
         includeBlanks: Bool = false,
         lazyYears: Bool = false,
         lazyMonths: Bool = false,
+        lazyDays: Bool = false,
         dayScrollEnabled: Bool = false,
         dayScrollAxis: Axis.Set = .vertical,
         dayGridItems: [GridItem] = Array(0..<7).map { _ in .init(spacing: .zero) }, // 7 day columns by default
@@ -35,11 +36,12 @@ where DayContent == DefaultDayContent,
     ) {
         self.init(
             startDate: startDate,
-            yearLimit: yearLimit,
+            drawingRange: drawingRange,
             calendar: calendar,
             includeBlanks: includeBlanks,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
+            lazyDays: lazyDays,
             dayScrollEnabled: dayScrollEnabled,
             dayScrollAxis: dayScrollAxis,
             dayGridItems: dayGridItems,
@@ -60,7 +62,7 @@ where DayContent == DefaultDayContent,
 }
 
 #Preview("Default") {
-    OBCalendar()
+    OBCalendar(drawingRange: .day(30))
 }
 
 #Preview("Horizontal") {

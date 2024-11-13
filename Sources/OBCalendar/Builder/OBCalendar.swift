@@ -60,12 +60,13 @@ public struct OBCalendar<
     ) -> YearContent
     
     var startDate: Date
-    var yearLimit: Int
+    var drawingRange: CalendarDateDrawDif
     var calendar: Calendar
     var includeBlanks: Bool
     
     let lazyYears: Bool
     let lazyMonths: Bool
+    let lazyDays: Bool
     let dayScrollEnabled: Bool
     let dayScrollAxis: Axis.Set
     let dayGridItems: [GridItem]
@@ -78,11 +79,12 @@ public struct OBCalendar<
     
     internal init(
         startDate: Date,
-        yearLimit: Int,
+        drawingRange: CalendarDateDrawDif,
         calendar: Calendar,
         includeBlanks: Bool = false,
         lazyYears: Bool = false,
         lazyMonths: Bool = false,
+        lazyDays: Bool = false,
         dayScrollEnabled: Bool = false,
         dayScrollAxis: Axis.Set = .vertical,
         dayGridItems: [GridItem] = Array(0..<7).map { _ in .init() }, // 7 day columns by default
@@ -114,11 +116,12 @@ public struct OBCalendar<
         self.monthContent = monthContent
         self.yearContent = yearContent
         self.startDate = startDate
-        self.yearLimit = yearLimit
+        self.drawingRange = drawingRange
         self.calendar = calendar
         self.includeBlanks = includeBlanks
         self.lazyYears = lazyYears
         self.lazyMonths = lazyMonths
+        self.lazyDays = lazyDays
         self.dayScrollEnabled = dayScrollEnabled
         self.dayScrollAxis = dayScrollAxis
         self.dayGridItems = dayGridItems
@@ -140,11 +143,12 @@ public struct OBCalendar<
         
         .init(
             startDate: startDate,
-            yearLimit: yearLimit,
+            drawingRange: drawingRange,
             calendar: calendar,
             includeBlanks: includeBlanks,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
+            lazyDays: lazyDays,
             dayScrollEnabled: dayScrollEnabled,
             dayScrollAxis: dayScrollAxis,
             dayGridItems: dayGridItems,
@@ -184,11 +188,12 @@ public struct OBCalendar<
         
         .init(
             startDate: startDate,
-            yearLimit: yearLimit,
+            drawingRange: drawingRange,
             calendar: calendar,
             includeBlanks: includeBlanks,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
+            lazyDays: lazyDays,
             dayScrollEnabled: dayScrollEnabled,
             dayScrollAxis: dayScrollAxis,
             dayGridItems: dayGridItems,
@@ -217,11 +222,12 @@ public struct OBCalendar<
         
         .init(
             startDate: startDate,
-            yearLimit: yearLimit,
+            drawingRange: drawingRange,
             calendar: calendar,
             includeBlanks: includeBlanks,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
+            lazyDays: lazyDays,
             dayScrollEnabled: dayScrollEnabled,
             dayScrollAxis: dayScrollAxis,
             dayGridItems: dayGridItems,
@@ -244,8 +250,9 @@ extension OBCalendar: View {
     public var body: some View {
         BaseCalendarView(
             startDate: startDate,
-            yearLimit: yearLimit,
+            drawingRange: drawingRange,
             calendar: calendar,
+            lazyDays: lazyDays,
             lazyMonths: lazyMonths,
             lazyYears: lazyYears,
             dayScrollEnabled: dayScrollEnabled,
