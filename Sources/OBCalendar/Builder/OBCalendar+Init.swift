@@ -18,7 +18,7 @@ where DayContent == DefaultDayContent,
 {
     init(
         startDate: Date = Date(),
-        drawingRange: CalendarDateDrawDif = .year(1),
+        drawingRange: CalendarDrawRange = .year(1),
         calendar: Calendar = .current,
         includeBlanks: Bool = false,
         lazyYears: Bool = false,
