@@ -10,8 +10,8 @@ import Foundation
 public enum CalendarDrawRange {
     
     public struct CalendarTarget {
-        let component: Calendar.Component
-        let value: Int
+        public let component: Calendar.Component
+        public let value: Int
     }
     
     case day(_ value: Int)
