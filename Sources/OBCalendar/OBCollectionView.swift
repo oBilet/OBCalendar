@@ -24,7 +24,6 @@ public struct OBCollectionView<Content: View, DataType>: View {
     let gridItems: [GridItem]
     let gridSpacing: CGFloat
     let scrollEnabled: Bool
-    let semaphore = DispatchSemaphore(value: 1)
     
     @State private var nonLazyOrthogonalSizes: [CGFloat]
     
