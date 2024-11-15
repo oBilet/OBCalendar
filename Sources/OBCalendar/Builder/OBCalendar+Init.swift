@@ -84,6 +84,7 @@ where DayContent == DefaultDayContent,
                 Divider()
             }
             .frame(width: geometry.size.width)
+            .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
