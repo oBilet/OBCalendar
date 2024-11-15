@@ -7,17 +7,8 @@
 
 import SwiftUI
 
-private struct RoundedCornersShape: Shape {
-    var corners: UIRectCorner
-    var radius: CGFloat
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
-    }
-}
-
-extension Dictionary where Key == Date?, Value == String {
+private extension Dictionary where Key == Date?, Value == String {
+    
     func yearExists(year: Int, calendar: Calendar) -> Bool {
         self.contains { element in
             if let date = element.key {
@@ -58,22 +49,6 @@ private extension DemoCalendar {
             calendar.date(from: DateComponents(year: 2025, month: 10, day: 29)): "Republic Day"
         ]
     }
-    
-    static func getYears(from calendar: Calendar) -> [CalendarModel.Year] {
-        let today = Date()
-        let todayComponents = DateComponents(
-            year: calendar.component(.year, from: today),
-            month: calendar.component(.month, from: today),
-            day: 1
-        )
-        let firstDayOfMonth = calendar.date(from: todayComponents)!
-        let nextYear = calendar.date(byAdding: .year, value: 1, to: firstDayOfMonth)
-        return CalendarModelBuilder.defaultLayout(
-            calendar: calendar,
-            startDate: firstDayOfMonth,
-            endDate: nextYear!
-        )
-    }
 }
 
 struct DemoCalendar: View {
@@ -82,8 +57,7 @@ struct DemoCalendar: View {
     @State var doubleSelection = false
     @State var firstSelectedDate: Date?
     @State var secondSelectedDate: Date?
-    
-    let years: [CalendarModel.Year]
+
     let specialDays: [Date?: String]
     
     let calendar: Calendar
@@ -93,7 +67,6 @@ struct DemoCalendar: View {
         .foregroundColor(.green)
     
     init(calendar: Calendar) {
-        self.years = Self.getYears(from: calendar)
         self.specialDays = Self.makeSpecialDays(calendar: calendar)
         self.calendar = calendar
     }
