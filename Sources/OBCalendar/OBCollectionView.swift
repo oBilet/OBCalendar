@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 private struct SizePreferenceKey: PreferenceKey {
     static var defaultValue = CGFloat.zero
@@ -109,7 +110,12 @@ public struct OBCollectionView<Content: View, DataType>: View {
     
     private func makeNonLazyGrid(scrollProxy: ScrollViewProxy?) -> some View {
         
+        let dataCount = data.count
         let gridItemCount = gridItems.count
+        let preCalculatedRowCount = dataCount / gridItemCount
+        let rowCount = dataCount % gridItemCount > 0
+        ? preCalculatedRowCount + 1
+        : preCalculatedRowCount
         
         var contents = Array(0..<gridItemCount).map { _ in [Content]() }
         
@@ -122,85 +128,43 @@ public struct OBCollectionView<Content: View, DataType>: View {
         
         return ContentBuilder.build {
             if axis == .vertical {
-                HStack(alignment: .top, spacing: .zero) {
-                    ForEach(gridItems.indices, id: \.self) { columnIndex in
-                        
-                        let gridItem = gridItems[columnIndex]
-                        
-                        VStack(spacing: gridSpacing) {
-                            
-                            if contents[columnIndex].isEmpty {
-                                let spacerView = Color.clear
-                                let alignedSpacer = ContentBuilder.alignCellForVGridItem(
-                                    view: spacerView,
-                                    gridItem: gridItem
-                                )
-                                modifyCellSizePreferenceForVGridItem(
-                                    view: alignedSpacer,
-                                    contentIndex: 0
-                                )
-                                .frame(
-                                    height: nonLazyOrthogonalSizes.first ?? .zero
-                                )
-                            } else {
-                                ForEach(contents[columnIndex].indices, id: \.self) { contentIndex in
-                                    let cellView = contents[columnIndex][contentIndex]
-                                    let alignedCellView = ContentBuilder.alignCellForVGridItem(
-                                        view: cellView,
-                                        gridItem: gridItem
-                                    )
-                                    modifyCellSizePreferenceForVGridItem(
-                                        view: alignedCellView,
-                                        contentIndex: contentIndex
-                                    )
-                                    .frame(
-                                        height:  nonLazyOrthogonalSizes[contentIndex],
-                                        alignment: gridItem.alignment ?? .center
-                                    )
+                VStack(spacing: gridSpacing) {
+                    ForEach(0..<rowCount, id: \.self) { rowIndex in
+                        HStack(spacing: .zero) {
+                            ForEach(gridItems.indices, id: \.self) { columnIndex in
+                                let column = contents[columnIndex]
+                                let view = ContentBuilder.build {
+                                    if column.isValid(index: rowIndex) {
+                                        column[rowIndex]
+                                    } else {
+                                        Color.clear
+                                    }
                                 }
+                                ContentBuilder.alignCellForVGridItem(
+                                    view: view,
+                                    gridItem: gridItems[columnIndex]
+                                )
                             }
-                            
-                            
                         }
                     }
                 }
             } else if axis == .horizontal {
-                VStack(alignment: .leading, spacing: .zero) {
-                    ForEach(gridItems.indices, id: \.self) { rowIndex in
-                        HStack(spacing: gridSpacing) {
-                            
-                            let gridItem = gridItems[rowIndex]
-                            
-                            if contents[rowIndex].isEmpty {
-                                let spacerView = Color.clear
-                                let alignedSpacer = ContentBuilder.alignCellForHGridItem(
-                                    view: spacerView,
-                                    gridItem: gridItem
-                                )
-                                modifyCellSizePreferenceForHGridItem(
-                                    view: alignedSpacer,
-                                    contentIndex: 0
-                                )
-                                .frame(
-                                    width: nonLazyOrthogonalSizes.first ?? .zero,
-                                    alignment: gridItem.alignment ?? .center
-                                )
-                            } else {
-                                ForEach(contents[rowIndex].indices, id: \.self) { contentIndex in
-                                    let cellView = contents[rowIndex][contentIndex]
-                                    let alignedCellView = ContentBuilder.alignCellForHGridItem(
-                                        view: cellView,
-                                        gridItem: gridItem
-                                    )
-                                    modifyCellSizePreferenceForHGridItem(
-                                        view: alignedCellView,
-                                        contentIndex: contentIndex
-                                    )
-                                    .frame(
-                                        width: nonLazyOrthogonalSizes[contentIndex],
-                                        alignment: gridItem.alignment ?? .center
-                                    )
+                HStack(spacing: gridSpacing) {
+                    ForEach(0..<rowCount, id: \.self) { columnIndex in
+                        VStack(spacing: .zero) {
+                            ForEach(gridItems.indices, id: \.self) { rowIndex in
+                                let column = contents[rowIndex]
+                                let view = ContentBuilder.build {
+                                    if column.isValid(index: columnIndex) {
+                                        column[columnIndex]
+                                    } else {
+                                        Color.clear
+                                    }
                                 }
+                                ContentBuilder.alignCellForHGridItem(
+                                    view: view,
+                                    gridItem: gridItems[rowIndex]
+                                )
                             }
                         }
                     }
@@ -302,12 +266,11 @@ public struct OBCollectionView<Content: View, DataType>: View {
         gridItems: [.init(), .init(), .init()],
         gridSpacing: 8
     ) { item, index, scrollProxy in
-        let text: String = index == 1
-        ? "hello world hello world hello world hello world"
+        let text: String = index == 0
+        ? "hello world"
         : "hello"
         
         Text(text)
-            .fixedSize(horizontal: false, vertical: true)
             .background(Color.red)
     }
     .background(Color.yellow)
@@ -338,6 +301,6 @@ public struct OBCollectionView<Content: View, DataType>: View {
     ) { data, index, scrollProxy in
         Text("Lorem ipsum dolor sit amet.")
             .background(Color.red)
-            .fixedSize(horizontal: false, vertical: true)
     }
 }
+

@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-public enum CalendarDateDrawDif {
-    case day(_ value: Int)
-    case month(_ value: Int)
-    case year(_ value: Int)
-}
-
 public struct BaseCalendarView<
     DayContent: View,
     MonthContent: View,
@@ -22,7 +16,7 @@ public struct BaseCalendarView<
     let startDate: Date
     let endDate: Date
     
-    let drawingRange: CalendarDateDrawDif
+    let drawingRange: CalendarDrawRange
     let calendar: Calendar
     
     let lazyDays: Bool
@@ -61,7 +55,7 @@ public struct BaseCalendarView<
     
     init(
         startDate: Date = Date(),
-        drawingRange: CalendarDateDrawDif = .year(1),
+        drawingRange: CalendarDrawRange = .year(1),
         calendar: Calendar,
         lazyDays: Bool = false,
         lazyMonths: Bool = false,
@@ -104,7 +98,7 @@ public struct BaseCalendarView<
         
         let targetEndDate = CalendarUtility.addDateDiff(
             to: targetStartDate,
-            value: drawingRange,
+            range: drawingRange,
             calendar: calendar
         )
         

@@ -61,18 +61,14 @@ enum CalendarUtility {
     
     static func addDateDiff(
         to date: Date,
-        value: CalendarDateDrawDif,
+        range: CalendarDrawRange,
         calendar: Calendar
     ) -> Date? {
-        let target: (component: Calendar.Component, value: Int) = switch value {
-        case .day(let value):
-            (component: .day, value: value)
-        case .month(let value):
-            (component: .month, value: value)
-        case .year(let value):
-            (component: .year, value: value)
-        }
-        
-        return calendar.date(byAdding: target.component, value: target.value, to: date)
+        let target = range.calendarTarget
+        return calendar.date(
+            byAdding: target.component,
+            value: target.value,
+            to: date
+        )
     }
 }

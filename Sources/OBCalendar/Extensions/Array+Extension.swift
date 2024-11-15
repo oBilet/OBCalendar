@@ -8,8 +8,13 @@
 import Foundation
 
 extension Array {
+    
     func shifted(by offset: Int) -> Self {
         let offsetMod = offset % self.count
         return Array(self[offsetMod..<self.count] + self[0..<offsetMod])
+    }
+    
+    func isValid(index: Int) -> Bool {
+        !isEmpty && index >= startIndex && index < endIndex
     }
 }

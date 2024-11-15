@@ -60,7 +60,7 @@ public struct OBCalendar<
     ) -> YearContent
     
     var startDate: Date
-    var drawingRange: CalendarDateDrawDif
+    var drawingRange: CalendarDrawRange
     var calendar: Calendar
     var includeBlanks: Bool
     
@@ -79,7 +79,7 @@ public struct OBCalendar<
     
     internal init(
         startDate: Date,
-        drawingRange: CalendarDateDrawDif,
+        drawingRange: CalendarDrawRange,
         calendar: Calendar,
         includeBlanks: Bool = false,
         lazyYears: Bool = false,
