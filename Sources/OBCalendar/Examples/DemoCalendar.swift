@@ -120,7 +120,7 @@ struct DemoCalendar: View {
                 .compositingGroup()
                 .shadow(color: .gray, radius: 1, x: 0, y: 2)
             
-            calendarViewV2
+            calendarView
         }
     }
     
@@ -161,7 +161,7 @@ struct DemoCalendar: View {
         }
     }
     
-    var calendarViewV2: some View {
+    var calendarView: some View {
         OBCalendar()
             .dayModifier { baseView, model in
                 dayContent(baseView: baseView, model: model.day)
