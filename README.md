@@ -74,7 +74,7 @@ OBCalendar(drawingRange: .month(3))
 // 60 days of drawing range
 OBCalendar(drawingRange: .day(60))
 ```
-Horizontal:
+Horizontal Scroll:
 ```swift
 GeometryReader { geometry in
       OBCalendar(
