@@ -87,8 +87,9 @@ struct DemoCalendar: View {
                 .background(Color.red)
                 .foregroundColor(.white)
             
-            daysView
-                .padding(4)
+            weekdaysView
+                .padding(.vertical, 4)
+                .padding(.horizontal)
                 .background(Color.white)
                 .compositingGroup()
                 .shadow(color: .gray, radius: 1, x: 0, y: 2)
@@ -124,7 +125,7 @@ struct DemoCalendar: View {
         }
     }
     
-    var daysView: some View {
+    var weekdaysView: some View {
         let days = getShortLocalizedWeekdays(for: calendar)
         return HStack {
             ForEach(days.indices, id: \.self) { index in
@@ -168,15 +169,16 @@ struct DemoCalendar: View {
            specialDaysVisible {
             dayView
                 .overlay(
-                    VStack(alignment: .trailing) {
-                        Image(systemName: "circle.fill")
-                            .resizable()
-                            .frame(width: 6, height: 6)
-                            .foregroundColor(.blue)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                        
-                        Spacer()
-                    }.padding(12)
+                    Image(systemName: "circle.fill")
+                        .resizable()
+                        .frame(width: 6, height: 6)
+                        .foregroundColor(.blue)
+                        .padding(12)
+                        .frame(
+                            maxWidth: .infinity,
+                            maxHeight: .infinity,
+                            alignment: .topTrailing
+                        )
                 )
         } else {
             dayView
