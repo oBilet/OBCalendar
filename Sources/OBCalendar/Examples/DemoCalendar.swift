@@ -173,9 +173,6 @@ struct DemoCalendar: View {
                     yearModel: model.year
                 )
             }
-            .yearModifier { baseView, monthsView, model in
-                baseView
-            }
     }
     
     @ViewBuilder
