@@ -134,32 +134,38 @@ public struct OBCollectionView<Content: View, DataType>: View {
                         HStack(spacing: .zero) {
                             ForEach(gridItems.indices, id: \.self) { columnIndex in
                                 let column = contents[columnIndex]
-                                ContentBuilder.build {
+                                let view = ContentBuilder.build {
                                     if column.isValid(index: rowIndex) {
                                         column[rowIndex]
                                     } else {
                                         Color.clear
                                     }
                                 }
-                                .frame(maxWidth: .infinity)
+                                ContentBuilder.alignCellForVGridItem(
+                                    view: view,
+                                    gridItem: gridItems[columnIndex]
+                                )
                             }
                         }
                     }
                 }
             } else if axis == .horizontal {
                 HStack(spacing: gridSpacing) {
-                    ForEach(0..<rowCount, id: \.self) { rowIndex in
+                    ForEach(0..<rowCount, id: \.self) { columnIndex in
                         VStack(spacing: .zero) {
-                            ForEach(gridItems.indices, id: \.self) { columnIndex in
-                                let column = contents[columnIndex]
-                                ContentBuilder.build {
-                                    if column.isValid(index: rowIndex) {
-                                        column[rowIndex]
+                            ForEach(gridItems.indices, id: \.self) { rowIndex in
+                                let column = contents[rowIndex]
+                                let view = ContentBuilder.build {
+                                    if column.isValid(index: columnIndex) {
+                                        column[columnIndex]
                                     } else {
                                         Color.clear
                                     }
                                 }
-                                .frame(maxHeight: .infinity)
+                                ContentBuilder.alignCellForHGridItem(
+                                    view: view,
+                                    gridItem: gridItems[rowIndex]
+                                )
                             }
                         }
                     }
@@ -262,11 +268,10 @@ public struct OBCollectionView<Content: View, DataType>: View {
         gridSpacing: 8
     ) { item, index, scrollProxy in
         let text: String = index == 0
-        ? "hello world hello world"
+        ? "hello world"
         : "hello"
         
         Text(text)
-            .fixedSize(horizontal: false, vertical: true)
             .background(Color.red)
     }
     .background(Color.yellow)
@@ -297,6 +302,6 @@ public struct OBCollectionView<Content: View, DataType>: View {
     ) { data, index, scrollProxy in
         Text("Lorem ipsum dolor sit amet.")
             .background(Color.red)
-            .fixedSize(horizontal: false, vertical: true)
     }
 }
+

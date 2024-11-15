@@ -32,10 +32,14 @@ enum ContentBuilder {
                         maxWidth: maximum,
                         alignment: gridItem.alignment ?? .center
                     )
-            case .adaptive:
+            case .adaptive(let minimum, let maximum):
                 view
+                    .frame(
+                        minWidth: minimum,
+                        maxWidth: maximum,
+                        alignment: gridItem.alignment ?? .center
+                    )
                     .fixedSize(horizontal: true, vertical: false)
-                    .frame(alignment: gridItem.alignment ?? .center)
             @unknown default:
                 view
                     .frame(alignment: gridItem.alignment ?? .center)
@@ -62,10 +66,14 @@ enum ContentBuilder {
                         maxHeight: maximum,
                         alignment: gridItem.alignment ?? .center
                     )
-            case .adaptive:
+            case .adaptive(let minimum, let maximum):
                 view
+                    .frame(
+                        minHeight: minimum,
+                        maxHeight: maximum,
+                        alignment: gridItem.alignment ?? .center
+                    )
                     .fixedSize(horizontal: false, vertical: true)
-                    .frame(alignment: gridItem.alignment ?? .center)
             @unknown default:
                 view
                     .frame(alignment: gridItem.alignment ?? .center)
