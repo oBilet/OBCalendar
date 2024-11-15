@@ -150,9 +150,9 @@ struct DemoCalendar: View {
     
     @ViewBuilder
     func dayContent(baseView: some View, model: CalendarModel.Day) -> some View {
-        let dayView = modifyDayView(
-            model: model,
-            content: { baseView }
+        let dayView = modify(
+            dayView: baseView,
+            model: model
         )
         .padding(.vertical, 4)
         .onTapGesture {
@@ -249,11 +249,11 @@ struct DemoCalendar: View {
     }
     
     @ViewBuilder
-    func modifySelectedDayView<Content: View>(
-        date: Date,
-        @ViewBuilder content: () -> Content
+    func modify(
+        selectedDayView: some View,
+        date: Date
     ) -> some View {
-        let modifiedContent = content()
+        let modifiedContent = selectedDayView
             .background(
                 selectedBackground
             )
@@ -285,39 +285,39 @@ struct DemoCalendar: View {
     }
     
     @ViewBuilder
-    func modifyBetweenSelectedDateView<Content: View>(
-        date: Date,
-        @ViewBuilder content: () -> Content
+    func modifyBetweenSelectedDateView(
+        baseView: some View,
+        date: Date
     ) -> some View {
         if let firstSelectedDate,
             let secondSelectedDate,
             date > firstSelectedDate && date < secondSelectedDate {
-            content()
+            baseView
                 .background(
                     selectedBetweenBackground
                 )
         } else {
-            content()
+            baseView
         }
     }
     
     @ViewBuilder
-    func modifyDayView<Content: View>(
-        model: CalendarModel.Day,
-        @ViewBuilder content: () -> Content
+    func modify(
+        dayView: some View,
+        model: CalendarModel.Day
     ) -> some View {
         
         if model.date == firstSelectedDate || model.date == secondSelectedDate {
             
-            modifySelectedDayView(
-                date: model.date,
-                content: content
+            modify(
+                selectedDayView: dayView,
+                date: model.date
             )
             
         } else {
             modifyBetweenSelectedDateView(
-                date: model.date,
-                content: content
+                baseView: dayView,
+                date: model.date
             )
         }
     }
