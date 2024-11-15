@@ -43,6 +43,10 @@ To integrate `OBCalendar` into your project using Swift Package Manager, follow 
     ```
 - Choose the package version or branch and click Add Package.
 
+## Note
+For better performance, use `lazyDays: true` and `lazyMonths: true`.
+If you are using programmatic scroll, set `lazyYears: false` because subviews need to be loaded into memory once for ScrollViewProxy to recognize their id values.
+
 ## Usage
 
 - You can create `OBCalendar` specifying `startDate` (default is now) and DrawingRange (day, month or year from startDate) (default `drawingRange` is `.year(1)`).
