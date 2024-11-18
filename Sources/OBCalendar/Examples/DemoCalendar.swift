@@ -49,6 +49,14 @@ private extension DemoCalendar {
             calendar.date(from: DateComponents(year: 2025, month: 10, day: 29)): "Republic Day"
         ]
     }
+    
+    static func makeColor(red: Int, green: Int, blue: Int) -> Color {
+        Color(
+            red: Double(red) / 255,
+            green: Double(green) / 255,
+            blue: Double(blue) / 255
+        )
+    }
 }
 
 struct DemoCalendar: View {
@@ -62,9 +70,24 @@ struct DemoCalendar: View {
     
     let calendar: Calendar
     
-    let selectedBetweenBackground = Color(UIColor.systemGreen.withAlphaComponent(0.25))
+    let selectedBetweenBackground = Self.makeColor(red: 185, green: 202, blue: 219)
+    
     let selectedBackground: some View = Circle()
-        .foregroundColor(.green)
+        .foregroundColor(
+            Self.makeColor(
+                red: 47,
+                green: 91,
+                blue: 141
+            )
+        )
+    
+    let secondSelectedBackground: some View = Circle()
+        .foregroundColor(Self.makeColor(red: 47, green: 91, blue: 141))
+        .overlay(
+            Circle()
+                .foregroundColor(.white)
+                .padding(2)
+        )
     
     init(calendar: Calendar) {
         self.specialDays = Self.makeSpecialDays(calendar: calendar)
@@ -84,7 +107,7 @@ struct DemoCalendar: View {
             headerView
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(8)
-                .background(Color.red)
+                .background(Self.makeColor(red: 210, green: 59, blue: 56))
                 .foregroundColor(.white)
             
             weekdaysView
@@ -119,7 +142,8 @@ struct DemoCalendar: View {
             Image(systemName: "calendar")
             Text("Departure Date")
             Spacer()
-            Divider()
+            Rectangle()
+                .frame(width: 1)
             Image(systemName: "checkmark")
             Text("APPLY")
         }
@@ -172,7 +196,7 @@ struct DemoCalendar: View {
                     Image(systemName: "circle.fill")
                         .resizable()
                         .frame(width: 6, height: 6)
-                        .foregroundColor(.blue)
+                        .foregroundColor(Self.makeColor(red: 47, green: 91, blue: 141))
                         .padding(12)
                         .frame(
                             maxWidth: .infinity,
@@ -215,11 +239,11 @@ struct DemoCalendar: View {
                     calendar: calendar
                 ) {
                     HStack {
-                        Image(systemName: "star.fill")
+                        Image(systemName: "circle.fill")
                             .resizable()
-                            .frame(width: 12, height: 12)
+                            .frame(width: 8, height: 8)
                             .aspectRatio(contentMode: .fit)
-                            .foregroundColor(.blue)
+                            .foregroundColor(Self.makeColor(red: 47, green: 91, blue: 141))
                         
                         Text(specialDay.value)
                     }
@@ -255,14 +279,22 @@ struct DemoCalendar: View {
         selectedDayView: some View,
         date: Date
     ) -> some View {
-        let modifiedContent = selectedDayView
-            .background(
-                selectedBackground
-            )
-            .foregroundColor(.white)
+        
         
         let isFirstSelected = date == firstSelectedDate && secondSelectedDate != nil
         let isSingleSelected = firstSelectedDate == nil || secondSelectedDate == nil
+        
+        let modifiedContent = selectedDayView
+            .background(
+                ContentBuilder.build {
+                    if isFirstSelected || isSingleSelected {
+                        selectedBackground
+                    } else {
+                        secondSelectedBackground
+                    }
+                }
+            )
+            .foregroundColor(isFirstSelected || isSingleSelected ? .white : .black)
         
         if isSingleSelected {
             modifiedContent
@@ -343,4 +375,19 @@ struct DemoCalendar: View {
     var calendar = Calendar.current
     calendar.locale = Locale(identifier: "en_US")
     return DemoCalendar(calendar: calendar)
+}
+
+#Preview("Second Selection") {
+    
+    ZStack {
+        Circle()
+            .foregroundColor(.blue)
+            .overlay(
+                Circle()
+                    .foregroundColor(.white)
+                    .padding(4)
+            )
+    }
+    .padding()
+    .background(Color.black)
 }
