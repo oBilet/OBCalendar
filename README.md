@@ -74,6 +74,40 @@ OBCalendar(drawingRange: .month(3))
 // 60 days of drawing range
 OBCalendar(drawingRange: .day(60))
 ```
+
+Double selection example:
+```swift
+OBCalendar(calendar: calendar)
+   .dayModifier { baseView, model in
+      let date = model.day.date
+      let targetView = baseView
+         .onTapGesture {
+            if firstSelectedDate == nil {
+               firstSelectedDate = date
+            } else if secondSelectedDate == nil {
+               secondSelectedDate = date
+            } else {
+               secondSelectedDate = nil
+               firstSelectedDate = date
+            }
+         }
+   
+      if model.day.date == firstSelectedDate {
+         targetView
+            .background(firstSelectedBackground)
+      } else if model.day.date == secondSelectedDate {
+         targetView
+            .background(secondSelectedBackground)
+      } else if isBetweenSelected(date: date) { //date > firstSelectedDate && date < secondSelectedDate
+         targetView
+            .background(betweenSelectedBackground)
+      } else {
+         targetView
+      }
+   }
+```
+
+
 Horizontal Scroll:
 ```swift
 GeometryReader { geometry in
@@ -106,7 +140,7 @@ OBCalendar()
       .monthModifier{ baseView, daysView, model in
           VStack {
               Text("Modified Months")
-                 daysView
+              daysView
           }
           .padding()
       }
