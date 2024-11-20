@@ -92,10 +92,10 @@ OBCalendar()
             }
          }
    
-      if model.day.date == firstSelectedDate {
+      if date == firstSelectedDate {
          targetView
             .background(firstSelectedBackground)
-      } else if model.day.date == secondSelectedDate {
+      } else if date == secondSelectedDate {
          targetView
             .background(secondSelectedBackground)
       } else if isBetweenSelected(date: date) { //date > firstSelectedDate && date < secondSelectedDate
