@@ -77,7 +77,7 @@ OBCalendar(drawingRange: .day(60))
 
 Double selection example:
 ```swift
-OBCalendar(calendar: calendar)
+OBCalendar()
    .dayModifier { baseView, model in
       let date = model.day.date
       let targetView = baseView
