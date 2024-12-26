@@ -9,7 +9,7 @@
 
 ## Documentation and Tutorial
 - You can visit for the <a href="https://obilet.github.io/OBCalendarDocument/documentation/obiletcalendar/" target="_blank">documentation</a>
-- You can visit for the <a href="https://obilet.github.io/OBCalendarDocument/tutorials/obiletcalendar/" target="_blank">tutorial</a> step by step
+- You can visit for the <a href="https://obilet.github.io/OBCalendarDocument/tutorials/meetobiletcalendar" target="_blank">tutorial</a> step by step
 
 ## Example Designs
 
