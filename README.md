@@ -16,14 +16,14 @@
 <div align="center">
   <table>
     <tr>
-      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/firstSS.png"></td>
-      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/secondSS.png"></td>
-      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/thirdSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendar/blob/main/SSForReadme/firstSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendar/blob/main/SSForReadme/secondSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendar/blob/main/SSForReadme/thirdSS.png"></td>
     </tr>
     <tr>
-     <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/fourthSS.png"></td>
-      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/fifthSS.png"></td>
-      <td><img width=300 src="https://github.com/oBilet/OBCalendarDocument/blob/main/docs/images/obcalendar.ObiletCalendar/sixthSS.png"></td>
+     <td><img width=300 src="https://github.com/oBilet/OBCalendar/blob/main/SSForReadme/fourthSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendar/blob/main/SSForReadme/fifthSS.png"></td>
+      <td><img width=300 src="https://github.com/oBilet/OBCalendar/blob/main/SSForReadme/sixthSS.png"></td>
     </tr>
   </table>
 </div>
