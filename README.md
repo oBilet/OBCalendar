@@ -49,19 +49,19 @@ If you are using programmatic scroll, set `lazyYears: false` because subviews ne
 
 ## Usage
 
-- You can create `OBCalendar` specifying `startDate` (default is now) and DrawingRange (day, month or year from startDate) (default `drawingRange` is `.year(1)`).
+- You can create `OBCalendar` specifying `startDate` (default is: current date) and DrawingRange (day, month or year from startDate) (default `drawingRange` is `.year(1)`).
 - Modifiers are optional and you can choose to use `baseView` or use the packed views (daysView, monthsView) inside the modifiers or you can return your custom view.
 - The first model consists of `CalendarModel.Year`, `CalendarModel.Month` and `CalendarModel.Day` and a view is created for each day using this model in the first block.
 - Modifiers should be written in this order: dayModifier -> monthModifier -> yearModifier
 - `baseView` in the modifier closures is the default view that has its own custom modification over the previous modifier method's return type, like having a header in months for example.
 - `daysView` in the monthModifier and `monthsView` in the yearModifier are the untouched pack of views that will have the modifications from previous modifiers.
-- Every modifier has its own related data type packed as a tuple in the closure parameter list. Default name is "model" and it has `CalendarModel.Year`, `CalendarModel.Month` and `CalendarModel.Month`.
+- Every modifier has its own related data type packed as a tuple in the closure parameter list. Default name is "model" and it has `CalendarModel.Year`, `CalendarModel.Month` and `CalendarModel.Day`.
 - The models provided to the closures are: `Day` + `Month` + `Year` for dayModifier, `Month` +`Year` for month modifier and only `Year` for yearModifier.
 
 - You can fully customize the view for each day, month, and year using `dayModifier`, `monthModifier` and `yearModifier` which do take `ViewBuilder` blocks.
-- This structure provides a seamless and dynamic user experience.
+- This structure facilitates efficient and adaptable development.
 
-- If you'd like to create the calendar from scratch, you can use the base version of it as well. You can customize it even further by setting sart and end dates to generating and providing your own date array for custom layouts.
+- If you'd like to create the calendar from scratch, you can use the base version of it as well. You can customize it even further by setting start and end dates to generating and providing your own date array for custom layouts.
 
 Default:
 ```swift
