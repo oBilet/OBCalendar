@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ObiletCollectionView
 
 public typealias DefaultDayContent = BaseCalendarDayView
 public typealias DefaultMonthContent = BaseCalendarMonthView<OBCollectionView<_ConditionalContent<BaseCalendarDayView, _ConditionalContent<BaseCalendarDayView, Color>>, CalendarModel.Day>>
