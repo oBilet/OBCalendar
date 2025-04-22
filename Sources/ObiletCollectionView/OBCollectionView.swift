@@ -72,22 +72,21 @@ public struct OBCollectionView<Content: View, DataType>: View {
         }
     }
     
+    @ViewBuilder
     private func makeContentView(scrollProxy: ScrollViewProxy?) -> some View {
-        ContentBuilder.build {
-            if isLazy {
-                let contentView = makeDataContentView(scrollProxy: scrollProxy)
-                if axis == .vertical {
-                    LazyVGrid(columns: gridItems, spacing: gridSpacing) {
-                        contentView
-                    }
-                } else if axis == .horizontal {
-                    LazyHGrid(rows: gridItems, spacing: gridSpacing) {
-                        contentView
-                    }
+        if isLazy {
+            let contentView = makeDataContentView(scrollProxy: scrollProxy)
+            if axis == .vertical {
+                LazyVGrid(columns: gridItems, spacing: gridSpacing) {
+                    contentView
                 }
-            } else {
-                makeNonLazyGrid(scrollProxy: scrollProxy)
+            } else if axis == .horizontal {
+                LazyHGrid(rows: gridItems, spacing: gridSpacing) {
+                    contentView
+                }
             }
+        } else {
+            makeNonLazyGrid(scrollProxy: scrollProxy)
         }
     }
 
