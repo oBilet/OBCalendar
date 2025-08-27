@@ -118,9 +118,10 @@ public struct OBBaseCalendar<
     calendar.locale = .init(identifier: "en-US")
     
     return OBBaseCalendar(
-        calendar: calendar,
-        startDate: startingDate,
-        endDate: endingDate,
+        years: CalendarModelBuilder.defaultLayout(
+            startDate: startingDate,
+            endDate: endingDate
+        ),
         monthGridItems: [
             .init(),
             .init()
