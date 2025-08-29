@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum CalendarDrawRange {
+public enum CalendarDrawRange: Equatable {
     
     public struct CalendarTarget {
         public let component: Calendar.Component

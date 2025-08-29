@@ -8,30 +8,36 @@
 import SwiftUI
 import ObiletCollectionView
 
+private struct CalendarDrawSettings: Equatable {
+    
+    let startDate: Date
+    let drawRange: CalendarDrawRange
+}
+
 public struct BaseCalendarView<
     DayContent: View,
     MonthContent: View,
     YearContent: View
 >: View {
     
-    let startDate: Date
-    let endDate: Date
+    private let drawSettings: CalendarDrawSettings
+    private let calendar: Calendar
     
-    let drawingRange: CalendarDrawRange
-    let calendar: Calendar
+    private let lazyDays: Bool
+    private let lazyMonths: Bool
+    private let lazyYears: Bool
+    private let dayScrollEnabled: Bool
+    private let dayScrollAxis: Axis.Set
+    private let dayGridItems: [GridItem]
+    private let monthScrollEnabled: Bool
+    private let monthScrollAxis: Axis.Set
+    private let monthGridItems: [GridItem]
+    private let yearScrollEnabled: Bool
+    private let yearScrollAxis: Axis.Set
+    private let yearGridItems: [GridItem]
     
-    let lazyDays: Bool
-    let lazyMonths: Bool
-    let lazyYears: Bool
-    let dayScrollEnabled: Bool
-    let dayScrollAxis: Axis.Set
-    let dayGridItems: [GridItem]
-    let monthScrollEnabled: Bool
-    let monthScrollAxis: Axis.Set
-    let monthGridItems: [GridItem]
-    let yearScrollEnabled: Bool
-    let yearScrollAxis: Axis.Set
-    let yearGridItems: [GridItem]
+    @State private var years = [CalendarModel.Year]()
+    @State private var loadedOnAppearOnce = false
     
     @ViewBuilder let dayContent: (
         _ model: (
@@ -89,7 +95,6 @@ public struct BaseCalendarView<
             _ monthsView: OBCollectionView<MonthContent, CalendarModel.Month>
         ) -> YearContent
     ) {
-        self.drawingRange = drawingRange
         self.calendar = calendar
         
         let targetStartDate = CalendarUtility.makeStartingDate(
@@ -97,18 +102,10 @@ public struct BaseCalendarView<
             calendar: calendar
         ) ?? Date()
         
-        let targetEndDate = CalendarUtility.addDateDiff(
-            to: targetStartDate,
-            range: drawingRange,
-            calendar: calendar
+        self.drawSettings = CalendarDrawSettings(
+            startDate: targetStartDate,
+            drawRange: drawingRange
         )
-        
-        self.startDate = targetStartDate
-        
-        self.endDate = CalendarUtility.makeEndingDate(
-            using: targetEndDate,
-            calendar: calendar
-        ) ?? Date()
         
         self.dayContent = dayContent
         self.monthContent = monthContent
@@ -128,16 +125,27 @@ public struct BaseCalendarView<
         self.yearGridItems = yearGridItems
     }
     
-    
     public var body: some View {
+        contentView
+            .onAppear {
+                if !loadedOnAppearOnce {
+                    loadedOnAppearOnce = true
+                    generateYears(drawSettings: drawSettings)
+                }
+            }
+            .onChange(of: drawSettings) { newValue in
+                generateYears(drawSettings: newValue)
+            }
+    }
+    
+    @ViewBuilder
+    private var contentView: some View {
         calendarView
     }
     
-    var calendarView: some View {
+    private var calendarView: some View {
         OBBaseCalendar(
-            calendar: calendar,
-            startDate: startDate,
-            endDate: endDate,
+            years: years,
             lazyYears: lazyYears,
             lazyMonths: lazyMonths,
             lazyDays: lazyDays,
@@ -149,13 +157,87 @@ public struct BaseCalendarView<
             monthGridItems: monthGridItems,
             yearScrollEnabled: yearScrollEnabled,
             yearScrollAxis: yearScrollAxis,
-            yearGridItems: yearGridItems
-        ) { model, scrollProxy in
-            dayContent(model)
-        } monthContent: { model, scrollProxy, daysView in
-            monthContent(model, daysView)
-        } yearContent: { year, scrollProxy, monthsView in
-            yearContent(year, monthsView)
+            yearGridItems: yearGridItems,
+            dayContent: { model, scrollProxy in
+                dayContent(model)
+            },
+            monthContent: { model, scrollProxy, daysView in
+                monthContent(model, daysView)
+            },
+            yearContent: { year, scrollProxy, monthsView in
+                yearContent(year, monthsView)
+            },
+        )
+    }
+    
+    private func generateYears(drawSettings: CalendarDrawSettings) {
+        let targetStartDate = CalendarUtility.makeStartingDate(
+            using: drawSettings.startDate,
+            calendar: calendar
+        ) ?? Date()
+        
+        let targetEndDate = CalendarUtility.addDateDiff(
+            to: targetStartDate,
+            range: drawSettings.drawRange,
+            calendar: calendar
+        )
+        
+        let normalizedEndDate = CalendarUtility.makeEndingDate(
+            using: targetEndDate,
+            calendar: calendar
+        ) ?? Date()
+        
+        self.years = CalendarModelBuilder.defaultLayout(
+            calendar: calendar,
+            startDate: targetStartDate,
+            endDate: normalizedEndDate
+        )
+    }
+}
+
+private struct PreviewView: View {
+    
+    @State var selectedDate: Date?
+    @State var startDate: Date = Date()
+    @State var drawRange = CalendarDrawRange.year(400)
+    
+    var body: some View {
+        calendarView
+    }
+    
+    private var calendarView: some View {
+        OBCalendar(
+            startDate: startDate,
+            drawingRange: drawRange,
+            lazyYears: true,
+            lazyMonths: false,
+            lazyDays: false,
+        )
+        .dayModifier { baseView, model in
+            let isSelected = selectedDate == model.day.date
+            baseView
+                .frame(width: 32, height: 32)
+                .padding(4)
+                .onTapGesture {
+                    selectedDate = model.day.date
+                }
+                .foregroundColor(
+                    isSelected
+                    ? .white
+                    : .primary
+                )
+                .background(
+                    Circle()
+                        .foregroundColor(
+                            isSelected
+                            ? .blue
+                            : .clear
+                        )
+                )
         }
     }
+}
+
+#Preview {
+    PreviewView()
 }
