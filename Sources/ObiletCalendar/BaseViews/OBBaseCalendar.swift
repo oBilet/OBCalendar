@@ -15,6 +15,16 @@ public struct OBBaseCalendar<
     let lazyMonths: Bool
     let lazyDays: Bool
     
+    let dayScrollEnabled: Bool
+    let dayScrollAxis: Axis.Set
+    let dayGridItems: [GridItem]
+    let monthScrollEnabled: Bool
+    let monthScrollAxis: Axis.Set
+    let monthGridItems: [GridItem]
+    let yearScrollEnabled: Bool
+    let yearScrollAxis: Axis.Set
+    let yearGridItems: [GridItem]
+    
     @ViewBuilder 
     let yearContent: (
         _ year: CalendarModel.Year,
@@ -48,16 +58,6 @@ public struct OBBaseCalendar<
             day: ScrollViewProxy?
         )
     ) -> Day
-
-    let dayScrollEnabled: Bool
-    let dayScrollAxis: Axis.Set
-    let dayGridItems: [GridItem]
-    let monthScrollEnabled: Bool
-    let monthScrollAxis: Axis.Set
-    let monthGridItems: [GridItem]
-    let yearScrollEnabled: Bool
-    let yearScrollAxis: Axis.Set
-    let yearGridItems: [GridItem]
     
     public var body: some View {
         OBCollectionView(

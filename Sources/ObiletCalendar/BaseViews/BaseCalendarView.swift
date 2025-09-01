@@ -40,23 +40,16 @@ public struct BaseCalendarView<
     @State private var loadedOnAppearOnce = false
     
     @ViewBuilder let dayContent: (
-        _ model: (
-            year: CalendarModel.Year,
-            month: CalendarModel.Month,
-            day: CalendarModel.Day
-        )
+        _ viewModel: CalendarModel.DayViewModel
     ) -> DayContent
     
     @ViewBuilder let monthContent: (
-        _ model: (
-            year: CalendarModel.Year,
-            month: CalendarModel.Month
-        ),
+        _ viewModel: CalendarModel.MonthViewModel,
         _ daysView: OBCollectionView<DayContent, CalendarModel.Day>
     ) -> MonthContent
     
     @ViewBuilder let yearContent: (
-        _ model: CalendarModel.Year,
+        _ viewModel: CalendarModel.YearViewModel,
         _ monthsView: OBCollectionView<MonthContent, CalendarModel.Month>
     ) -> YearContent
     
@@ -77,21 +70,14 @@ public struct BaseCalendarView<
         yearScrollAxis: Axis.Set = .vertical,
         yearGridItems: [GridItem] = [.init()],
         @ViewBuilder dayContent: @escaping (
-            _ model: (
-                year: CalendarModel.Year,
-                month: CalendarModel.Month,
-                day: CalendarModel.Day
-            )
+            _ viewModel: CalendarModel.DayViewModel
         ) -> DayContent,
         @ViewBuilder monthContent: @escaping (
-            _ model: (
-                year: CalendarModel.Year,
-                month: CalendarModel.Month
-            ),
+            _ viewModel: CalendarModel.MonthViewModel,
             _ daysView: OBCollectionView<DayContent, CalendarModel.Day>
         ) -> MonthContent,
         @ViewBuilder yearContent: @escaping (
-            _ model: CalendarModel.Year,
+            _ viewModel: CalendarModel.YearViewModel,
             _ monthsView: OBCollectionView<MonthContent, CalendarModel.Month>
         ) -> YearContent
     ) {
@@ -158,14 +144,34 @@ public struct BaseCalendarView<
             yearScrollEnabled: yearScrollEnabled,
             yearScrollAxis: yearScrollAxis,
             yearGridItems: yearGridItems,
-            dayContent: { model, scrollProxy in
-                dayContent(model)
+            dayContent: { (model, scrollProxy) in
+                dayContent(
+                    .init(
+                        day: model.day,
+                        month: model.month,
+                        year: model.year,
+                        calendar: calendar
+                    )
+                )
             },
-            monthContent: { model, scrollProxy, daysView in
-                monthContent(model, daysView)
+            monthContent: { (model, scrollProxy, daysView) in
+                monthContent(
+                    .init(
+                        month: model.month,
+                        year: model.year,
+                        calendar: calendar
+                    ),
+                    daysView
+                )
             },
-            yearContent: { year, scrollProxy, monthsView in
-                yearContent(year, monthsView)
+            yearContent: { (year, scrollProxy, monthsView) in
+                yearContent(
+                    .init(
+                        year: year,
+                        calendar: calendar
+                    ),
+                    monthsView
+                )
             },
         )
     }
@@ -193,51 +199,4 @@ public struct BaseCalendarView<
             endDate: normalizedEndDate
         )
     }
-}
-
-private struct PreviewView: View {
-    
-    @State var selectedDate: Date?
-    @State var startDate: Date = Date()
-    @State var drawRange = CalendarDrawRange.year(400)
-    
-    var body: some View {
-        calendarView
-    }
-    
-    private var calendarView: some View {
-        OBCalendar(
-            startDate: startDate,
-            drawingRange: drawRange,
-            lazyYears: true,
-            lazyMonths: false,
-            lazyDays: false,
-        )
-        .dayModifier { baseView, model in
-            let isSelected = selectedDate == model.day.date
-            baseView
-                .frame(width: 32, height: 32)
-                .padding(4)
-                .onTapGesture {
-                    selectedDate = model.day.date
-                }
-                .foregroundColor(
-                    isSelected
-                    ? .white
-                    : .primary
-                )
-                .background(
-                    Circle()
-                        .foregroundColor(
-                            isSelected
-                            ? .blue
-                            : .clear
-                        )
-                )
-        }
-    }
-}
-
-#Preview {
-    PreviewView()
 }

@@ -11,24 +11,24 @@ public protocol BaseCalendarYearViewProtocol<MonthContent>: View {
     
     associatedtype MonthContent: View
     
-    init(model: CalendarModel.Year, monthsView: MonthContent)
+    init(viewModel: CalendarModel.YearViewModel, monthsView: MonthContent)
 }
 
 public struct BaseCalendarYearView<MonthContent: View>: BaseCalendarYearViewProtocol {
     
-    let model: CalendarModel.Year
+    let viewModel: CalendarModel.YearViewModel
     let monthsView: MonthContent
     
     public init(
-        model: CalendarModel.Year,
+        viewModel: CalendarModel.YearViewModel,
         monthsView: MonthContent
     ) {
-        self.model = model
+        self.viewModel = viewModel
         self.monthsView = monthsView
     }
     
     public var body: some View {
         monthsView
-            .id("\(model.year)")
+            .id("\(viewModel.year)")
     }
 }

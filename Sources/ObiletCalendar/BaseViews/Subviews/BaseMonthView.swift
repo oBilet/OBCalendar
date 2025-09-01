@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private extension Int {
+internal extension Int {
     
     var noneFormattedString: String? {
         let formatter = NumberFormatter()
@@ -27,7 +27,7 @@ public protocol BaseCalendarMonthViewProtocol<DayContent>: View {
     associatedtype DayContent: View
     
     init(
-        model: (year: CalendarModel.Year, month: CalendarModel.Month),
+        viewModel: CalendarModel.MonthViewModel,
         daysView: DayContent,
         calendar: Calendar
     )
@@ -37,18 +37,16 @@ public struct BaseCalendarMonthView<DayContent: View>: BaseCalendarMonthViewProt
     
     private let padding: CGFloat = 12
     
-    let model: (year: CalendarModel.Year, month: CalendarModel.Month)
+    let viewModel: CalendarModel.MonthViewModel
     let daysView: DayContent
-    let calendar: Calendar
     
     public init(
-        model: (year: CalendarModel.Year, month: CalendarModel.Month),
+        viewModel: CalendarModel.MonthViewModel,
         daysView: DayContent,
         calendar: Calendar
     ) {
-        self.model = model
+        self.viewModel = viewModel
         self.daysView = daysView
-        self.calendar = calendar
     }
     
     public var body: some View {
@@ -67,11 +65,8 @@ public struct BaseCalendarMonthView<DayContent: View>: BaseCalendarMonthViewProt
     
     @ViewBuilder
     private var monthHeaderView: some View {
-        let monthSymbol = calendar.monthSymbols[model.month.month-1]
-        let yearText = model.year.year.toString(format: .none) ?? ""
-        let monthText = "\(monthSymbol) \(yearText)"
         HStack {
-            Text(monthText)
+            Text(viewModel.title)
                 .font(.system(size: 13))
             Spacer()
         }

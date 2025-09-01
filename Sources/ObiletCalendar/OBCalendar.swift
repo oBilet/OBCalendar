@@ -35,9 +35,9 @@ public struct OBCalendar<
     
     public typealias ModifiedYearBuilder<ModifiedYearContent: View> = OBCalendar<DayContent, MonthContent, ModifiedYearContent>
     
-    public typealias DayModel = (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day)
-    public typealias MonthModel = (year: CalendarModel.Year, month: CalendarModel.Month)
-    public typealias YearModel = CalendarModel.Year
+    public typealias DayModel = CalendarModel.DayViewModel//(year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day)
+    public typealias MonthModel = CalendarModel.MonthViewModel//(year: CalendarModel.Year, month: CalendarModel.Month)
+    public typealias YearModel = CalendarModel.YearViewModel//CalendarModel.Year
     
     public typealias BaseDayView = BaseCalendarDayView
     public typealias BaseMonthView = BaseCalendarMonthView<OBCollectionView<_ConditionalContent<DayContent, _ConditionalContent<DayContent, Color>>, CalendarModel.Day>>
@@ -45,19 +45,19 @@ public struct OBCalendar<
     
     @ViewBuilder private var dayContent: (
         _ baseView: BaseCalendarDayView,
-        _ model: DayModel
+        _ viewModel: DayModel
     ) -> DayContent
     
     @ViewBuilder private var monthContent: (
         _ baseView: BaseMonthView,
         _ daysView: OBCollectionView<_ConditionalContent<DayContent, _ConditionalContent<DayContent, Color>>, CalendarModel.Day>,
-        _ model: MonthModel
+        _ viewModel: MonthModel
     ) -> MonthContent
     
     @ViewBuilder private var yearContent: (
         _ baseView: BaseYearView,
         _ monthsView: OBCollectionView<MonthContent, CalendarModel.Month>,
-        _ model: YearModel
+        _ viewModel: YearModel
     ) -> YearContent
     
     var startDate: Date
@@ -98,19 +98,19 @@ public struct OBCalendar<
         
         @ViewBuilder dayContent: @escaping (
             _ baseView: BaseDayView,
-            _ model: DayModel
+            _ viewModel: DayModel
         ) -> DayContent,
         
         @ViewBuilder monthContent: @escaping (
             _ baseView: BaseMonthView,
             _ daysView: OBCollectionView<_ConditionalContent<DayContent, _ConditionalContent<DayContent, Color>>, CalendarModel.Day>,
-            _ model: MonthModel
+            _ viewModel: MonthModel
         ) -> MonthContent,
         
         @ViewBuilder yearContent: @escaping (
             _ baseView: BaseYearView,
             _ monthsView: OBCollectionView<MonthContent, CalendarModel.Month>,
-            _ model: YearModel
+            _ viewModel: YearModel
         ) -> YearContent
     ) {
         self.dayContent = dayContent
@@ -138,7 +138,7 @@ public struct OBCalendar<
     public func dayModifier<ModifiedDayContent: View>(
         @ViewBuilder _ modifier: @escaping (
             _ baseView: BaseDayView,
-            _ model: DayModel
+            _ viewModel: DayModel
         ) -> ModifiedDayContent
     ) -> ModifiedDayBuilder<_ConditionalContent<ModifiedDayContent, _ConditionalContent<ModifiedDayContent, Color>>> {
         
@@ -159,21 +159,21 @@ public struct OBCalendar<
             yearScrollEnabled: yearScrollEnabled,
             yearScrollAxis: yearScrollAxis,
             yearGridItems: yearGridItems
-        ) { baseView, model in
+        ) { baseView, viewModel in
             
             if includeBlanks {
-                modifier(baseView, model)
+                modifier(baseView, viewModel)
             } else {
-                if case .insideRange(.currentMonth) = model.day.rangeType {
-                    modifier(baseView, model)
+                if case .insideRange(.currentMonth) = viewModel.day.rangeType {
+                    modifier(baseView, viewModel)
                 } else {
                     Color.clear
                 }
             }
             
-        } monthContent: { baseView, daysView, model in
+        } monthContent: { baseView, daysView, viewModel in
             baseView
-        } yearContent: { baseView, monthsView, model in
+        } yearContent: { baseView, monthsView, viewModel in
             baseView
         }
     }
@@ -183,7 +183,7 @@ public struct OBCalendar<
         @ViewBuilder _ modifier: @escaping (
             _ baseView: BaseMonthView,
             _ daysView: OBCollectionView<_ConditionalContent<DayContent, _ConditionalContent<DayContent, Color>>, CalendarModel.Day>,
-            _ model: MonthModel
+            _ viewModel: MonthModel
         ) -> ModifiedMonthContent
     ) -> ModifiedMonthBuilder<ModifiedMonthContent> {
         
@@ -205,9 +205,9 @@ public struct OBCalendar<
             yearScrollAxis: yearScrollAxis,
             yearGridItems: yearGridItems,
             dayContent: dayContent
-        ) { baseView, daysView, model in
-            modifier(baseView, daysView, model)
-        } yearContent: { baseView, monthsView, model in
+        ) { baseView, daysView, viewModel in
+            modifier(baseView, daysView, viewModel)
+        } yearContent: { baseView, monthsView, viewModel in
             baseView
         }
     }
@@ -217,7 +217,7 @@ public struct OBCalendar<
         @ViewBuilder _ modifier: @escaping (
             _ baseView: BaseYearView,
             _ monthsView: OBCollectionView<MonthContent, CalendarModel.Month>,
-            _ model: YearModel
+            _ viewModel: YearModel
         ) -> ModifiedYearContent
     ) -> ModifiedYearBuilder<ModifiedYearContent> {
         
@@ -240,8 +240,8 @@ public struct OBCalendar<
             yearGridItems: yearGridItems,
             dayContent: dayContent,
             monthContent: monthContent
-        ) { baseView, monthsView, model in
-            modifier(baseView, monthsView, model)
+        ) { baseView, monthsView, viewModel in
+            modifier(baseView, monthsView, viewModel)
         }
     }
 }
@@ -265,30 +265,30 @@ extension OBCalendar: View {
             yearScrollEnabled: yearScrollEnabled,
             yearScrollAxis: yearScrollAxis,
             yearGridItems: yearGridItems
-        ) { model in
-            let view = BaseCalendarDayView(model: model)
+        ) { viewModel in
+            let view = BaseCalendarDayView(viewModel: viewModel)
             if includeBlanks {
-                dayContent(view, model)
+                dayContent(view, viewModel)
             } else {
-                if case .insideRange(.currentMonth) = model.day.rangeType {
-                    dayContent(view, model)
+                if case .insideRange(.currentMonth) = viewModel.day.rangeType {
+                    dayContent(view, viewModel)
                 } else {
                     Color.clear
                 }
             }
             
-        } monthContent: { model, daysView in
+        } monthContent: { viewModel, daysView in
             let view = BaseCalendarMonthView(
-                model: model,
+                viewModel: viewModel,
                 daysView: daysView,
                 calendar: calendar
             )
             
-            monthContent(view, daysView, model)
+            monthContent(view, daysView, viewModel)
             
-        } yearContent: { model, monthsView in
-            let view = BaseCalendarYearView(model: model, monthsView: monthsView)
-            yearContent(view, monthsView, model)
+        } yearContent: { viewModel, monthsView in
+            let view = BaseCalendarYearView(viewModel: viewModel, monthsView: monthsView)
+            yearContent(view, monthsView, viewModel)
         }
     }
 }
