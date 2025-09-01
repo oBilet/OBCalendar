@@ -9,17 +9,17 @@ import Foundation
 
 public enum CalendarModel {
     
-    public struct Year {
+    public struct Year: Equatable {
         public let year: Int
         public var months: [Month]
     }
     
-    public struct Month {
+    public struct Month: Equatable {
         public let month: Int
         public var days: [Day]
     }
     
-    public struct Day {
+    public struct Day: Equatable {
         
         public enum DateType {
             case previousMonth

@@ -9,13 +9,7 @@ import SwiftUI
 
 public protocol BaseCalendarDayViewProtocol: View {
     
-    init(
-        model: (
-            year: CalendarModel.Year,
-            month: CalendarModel.Month,
-            day: CalendarModel.Day
-        )
-    )
+    init(viewModel: CalendarModel.DayViewModel)
 }
 
 public struct BaseCalendarDayView: BaseCalendarDayViewProtocol {
@@ -27,7 +21,6 @@ public struct BaseCalendarDayView: BaseCalendarDayViewProtocol {
     ) -> some View {
         if isCurrentMonth(model: model) {
             Text("\(model.day)")
-                .font(.system(size: 15))
         } else {
             placeholder
         }
@@ -41,33 +34,19 @@ public struct BaseCalendarDayView: BaseCalendarDayViewProtocol {
         }
     }
     
-    let model: (year: CalendarModel.Year, month: CalendarModel.Month, day: CalendarModel.Day)
+    let viewModel: CalendarModel.DayViewModel
     let placeholderView = Color.clear
     
-    public init(
-        model: (
-            year: CalendarModel.Year,
-            month: CalendarModel.Month,
-            day: CalendarModel.Day
-        )
-    ) {
-        self.model = model
+    public init(viewModel: CalendarModel.DayViewModel) {
+        self.viewModel = viewModel
     }
     
     public var body: some View {
         Self.makeDayView(
-            model: model.day,
+            model: viewModel.day,
             placeholder: placeholderView
         )
         .frame(width: 32, height: 32)
         .frame(maxWidth: .infinity)
     }
 }
-
-//#Preview {
-//    CalendarBuilder(
-//        calendar: .current,
-//        scrollTrigger: .constant("")
-//    )
-//    .build()
-//}
