@@ -172,7 +172,7 @@ public struct BaseCalendarView<
                     ),
                     monthsView
                 )
-            },
+            }
         )
     }
     
