@@ -2,8 +2,9 @@
 # OBCalendar
 
 
-- `OBCalendar` is a SwiftUI-based calendar library designed to allow you to easily create your own custom calendars. With this structure, you can customize the days, months, and years. Additionally, you can change the localization of the calendar and display days within specific ranges.
-- Users set the `startDate` and `endDate` in `OBCalendar`, and the range is created automatically.
+- `OBCalendar` is a SwiftUI-based calendar library designed to allow you to easily create your own custom calendars. With this structure, you can customize the days, months, and years.
+- To change the locale of calendar-related texts, create a `Calendar` object, set its locale, and pass it to the OBCalendar initializer.
+- To configure the date range, pass `startDate` and `drawingRange` to the `OBCalendar`'s initializer.
 
 
 
@@ -51,14 +52,14 @@ If you are using programmatic scroll, set `lazyYears: false` because subviews ne
 
 - You can create `OBCalendar` specifying `startDate` (default is: current date) and DrawingRange (day, month or year from startDate) (default `drawingRange` is `.year(1)`).
 - Modifiers are optional and you can choose to use `baseView` or use the packed views (daysView, monthsView) inside the modifiers or you can return your custom view.
-- The first model consists of `CalendarModel.Year`, `CalendarModel.Month` and `CalendarModel.Day` and a view is created for each day using this model in the first block.
+- The dayModifier's "viewModel" contains `CalendarModel.Year`, `CalendarModel.Month` and `CalendarModel.Day` and a view is created for each day using these models.
 - Modifiers should be written in this order: dayModifier -> monthModifier -> yearModifier
 - `baseView` in the modifier closures is the default view that has its own custom modification over the previous modifier method's return type, like having a header in months for example.
 - `daysView` in the monthModifier and `monthsView` in the yearModifier are the untouched pack of views that will have the modifications from previous modifiers.
-- Every modifier has its own related data type packed as a tuple in the closure parameter list. Default name is "model" and it has `CalendarModel.Year`, `CalendarModel.Month` and `CalendarModel.Day`.
-- The models provided to the closures are: `Day` + `Month` + `Year` for dayModifier, `Month` +`Year` for month modifier and only `Year` for yearModifier.
+- Every modifier has its own viewModel in the closure parameter list. Default name is "viewModel" and it contains some functions and related models: `CalendarModel.Year`, `CalendarModel.Month` and `CalendarModel.Day`.
+- The data models which the closures' related viewModels contain are: `Day` + `Month` + `Year` for dayModifier, `Month` +`Year` for month modifier and only `Year` for yearModifier.
 
-- You can fully customize the view for each day, month, and year using `dayModifier`, `monthModifier` and `yearModifier` which do take `ViewBuilder` blocks.
+- You can fully customize the view for each day, month, and year by calling `dayModifier`, `monthModifier` and `yearModifier` modifier functions each of which accepts `ViewBuilder` blocks.
 - This structure facilitates efficient and adaptable development.
 
 - If you'd like to create the calendar from scratch, you can use the base version of it as well. You can customize it even further by setting start and end dates to generating and providing your own date array for custom layouts.
@@ -75,35 +76,16 @@ OBCalendar(drawingRange: .month(3))
 OBCalendar(drawingRange: .day(60))
 ```
 
-Double selection example:
+Range selection example:
 ```swift
 OBCalendar()
-   .dayModifier { baseView, model in
-      let date = model.day.date
-      let targetView = baseView
-         .onTapGesture {
-            if firstSelectedDate == nil {
-               firstSelectedDate = date
-            } else if secondSelectedDate == nil {
-               secondSelectedDate = date
-            } else {
-               secondSelectedDate = nil
-               firstSelectedDate = date
-            }
-         }
-   
-      if date == firstSelectedDate {
-         targetView
-            .background(firstSelectedBackground)
-      } else if date == secondSelectedDate {
-         targetView
-            .background(secondSelectedBackground)
-      } else if isBetweenSelected(date: date) { //date > firstSelectedDate && date < secondSelectedDate
-         targetView
-            .background(betweenSelectedBackground)
-      } else {
-         targetView
-      }
+   .dayModifier { baseView, viewModel in
+      baseView
+        .selectable(
+          lhsDate: $firstSelectedDate,
+          rhsDate: $secondSelectedDate,
+          viewModel: viewModel
+        )
    }
 ```
 
@@ -115,7 +97,7 @@ GeometryReader { geometry in
           monthScrollAxis: .horizontal,
           yearScrollAxis: .horizontal
       )
-      .monthModifier { baseView, daysView, model in
+      .monthModifier { baseView, daysView, viewModel in
           baseView
               .padding()
               .frame(width: geometry.size.width)
@@ -126,7 +108,7 @@ GeometryReader { geometry in
 DayModifier:
 ```swift
  OBCalendar()
-      .dayModifier { baseView, model in
+      .dayModifier { baseView, viewModel in
           baseView
               .background(Color.blue)
               .padding(2)
@@ -137,9 +119,10 @@ DayModifier:
 MonthModifier:
 ```swift
 OBCalendar()
-      .monthModifier{ baseView, daysView, model in
+      .monthModifier{ baseView, daysView, viewModel in
           VStack {
               Text("Modified Months")
+              Text(viewModel.title)
               daysView
           }
           .padding()
@@ -149,11 +132,11 @@ OBCalendar()
 Modified Day + Modified Month:
 ```swift
 OBCalendar()
-      .dayModifier { baseView, model in
+      .dayModifier { baseView, viewModel in
           baseView
               .foregroundColor(Color(.red))
       }
-      .monthModifier { baseView, daysView, model in
+      .monthModifier { baseView, daysView, viewModel in
           VStack {
               Text("Modified Months")
               daysView
