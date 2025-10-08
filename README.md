@@ -11,6 +11,11 @@
 ## Documentation and Tutorial
 - You can visit for the <a href="https://obilet.github.io/OBCalendarDocument/documentation/obiletcalendar/" target="_blank">documentation</a>
 - You can visit for the <a href="https://obilet.github.io/OBCalendarDocument/tutorials/meetobiletcalendar" target="_blank">tutorial</a> step by step
+- Video tutorial: <table><tr>
+- [<img width="836" height="598" alt="image" src="https://github.com/user-attachments/assets/faadfa40-577c-4b3f-a1f2-9e317770e708" />](https://youtu.be/nXdM4WMNDkg)
+</tr></table>
+
+ 
 
 ## Example Designs
 
